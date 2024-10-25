@@ -15,6 +15,9 @@ import com.telepathicgrunt.the_bumblezone.modcompat.recipecategories.jei.QueenTr
 import com.telepathicgrunt.the_bumblezone.modinit.BzCreativeTabs;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzItems;
+import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
+import com.telepathicgrunt.the_bumblezone.utils.PlatformHooks;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -27,6 +30,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,9 +41,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +137,25 @@ public class JEIIntegration implements IModPlugin {
             }
         }
         registration.addRecipes(QUEEN_RANDOMIZE_TRADES, randomizerTrades);
+
+        List<ItemStack> hangingGardensFlowers = GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_FLOWERS_BLOCKS);
+        hangingGardensFlowers.addAll(GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_TALL_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_TALL_FLOWERS_BLOCKS));
+
+        addComplexBlockTagInfo(registration,
+                Pair.of(".hanging_gardens_flowers.description", hangingGardensFlowers),
+                Pair.of(".crystalline_flower_can_be_placed_on.description",
+                        GeneralUtils.convertBlockTagsToItemStacks(BzTags.CRYSTALLINE_FLOWER_CAN_SURVIVE_ON, null))
+        );
+    }
+
+    @SafeVarargs
+    private static void addComplexBlockTagInfo(@NotNull IRecipeRegistration registration, Pair<String, List<ItemStack>>... structureInfo) {
+        for (Pair<String, List<ItemStack>> predicatePair : structureInfo) {
+            registration.addIngredientInfo(
+                    predicatePair.getSecond(),
+                    VanillaTypes.ITEM_STACK,
+                    Component.translatable(Bumblezone.MODID + predicatePair.getFirst()));
+        }
     }
 
     record TagData(int listSize, List<ItemStack> jeiItems, Ingredient jeiIngredient){}

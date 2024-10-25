@@ -16,6 +16,8 @@ import com.telepathicgrunt.the_bumblezone.modcompat.recipecategories.RandomizeTr
 import com.telepathicgrunt.the_bumblezone.modinit.BzCreativeTabs;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzItems;
+import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
@@ -30,15 +32,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class EMICompat implements EmiPlugin {
@@ -112,6 +119,26 @@ public class EMICompat implements EmiPlugin {
                         new ResourceLocation(Bumblezone.MODID, "" + recipeId)));
                 recipeId++;
             }
+        }
+
+        List<ItemStack> hangingGardensFlowers = GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_FLOWERS_BLOCKS);
+        hangingGardensFlowers.addAll(GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_TALL_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_TALL_FLOWERS_BLOCKS));
+
+        addComplexBlockTagInfo(registry,
+                Pair.of(".hanging_gardens_flowers.description", hangingGardensFlowers),
+                Pair.of(".crystalline_flower_can_be_placed_on.description",
+                        GeneralUtils.convertBlockTagsToItemStacks(BzTags.CRYSTALLINE_FLOWER_CAN_SURVIVE_ON, null))
+        );
+    }
+
+    @SafeVarargs
+    private static void addComplexBlockTagInfo(@NotNull EmiRegistry registry, Pair<String, List<ItemStack>>... structureInfo) {
+        for (Pair<String, List<ItemStack>> predicatePair : structureInfo) {
+            registry.addRecipe(new EmiInfoRecipe(
+                    List.of(EmiIngredient.of(Ingredient.of(predicatePair.getSecond().stream()))),
+                    List.of(Component.translatable(Bumblezone.MODID + predicatePair.getFirst())),
+                    new ResourceLocation(Bumblezone.MODID, predicatePair.getFirst())
+            ));
         }
     }
 

@@ -15,6 +15,8 @@ import com.telepathicgrunt.the_bumblezone.modcompat.recipecategories.emi.QueenTr
 import com.telepathicgrunt.the_bumblezone.modinit.BzCreativeTabs;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzItems;
+import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -36,6 +38,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -113,6 +116,26 @@ public class EMICompat implements EmiPlugin {
                         ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "" + recipeId)));
                 recipeId++;
             }
+        }
+
+        List<ItemStack> hangingGardensFlowers = GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_FLOWERS_BLOCKS);
+        hangingGardensFlowers.addAll(GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_TALL_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_TALL_FLOWERS_BLOCKS));
+
+        addComplexBlockTagInfo(registry,
+                Pair.of(".hanging_gardens_flowers.description", hangingGardensFlowers),
+                Pair.of(".crystalline_flower_can_be_placed_on.description",
+                        GeneralUtils.convertBlockTagsToItemStacks(BzTags.CRYSTALLINE_FLOWER_CAN_SURVIVE_ON, null))
+        );
+    }
+
+    @SafeVarargs
+    private static void addComplexBlockTagInfo(@NotNull EmiRegistry registry, Pair<String, List<ItemStack>>... structureInfo) {
+        for (Pair<String, List<ItemStack>> predicatePair : structureInfo) {
+            registry.addRecipe(new EmiInfoRecipe(
+                    List.of(EmiIngredient.of(Ingredient.of(predicatePair.getSecond().stream()))),
+                    List.of(Component.translatable(Bumblezone.MODID + predicatePair.getFirst())),
+                    ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, predicatePair.getFirst())
+            ));
         }
     }
 

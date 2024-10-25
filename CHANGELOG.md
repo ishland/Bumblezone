@@ -1,3 +1,13 @@
+### **(V.7.7.5 Changes) (1.21.1 Minecraft)**
+
+#### Items:
+Made Life Essence not turn Dead Bush into certain modded Saplings now by no longer using #saplings tag in
+ the `the_bumblezone:essence/life/dead_bush_rveives_to` block tag.
+
+#### Mod Compat:
+EMI, REI, and JEI will have info pages for flowers that show up in Hanging Garden and for blocks that can support Crystalline Flower.
+
+
 ### **(V.7.7.4 Changes) (1.21.1 Minecraft)**
 
 #### Entities:

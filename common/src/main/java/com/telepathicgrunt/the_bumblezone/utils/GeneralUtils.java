@@ -18,6 +18,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -894,6 +895,28 @@ public class GeneralUtils {
             }
         }
     }
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+
+    public static List<ItemStack> convertBlockTagsToItemStacks(TagKey<Block> baseTag, @Nullable TagKey<Block> disallowTag) {
+        List<ItemStack> itemStacks = new ArrayList<>();
+        for (Holder<Block> blockHolder : BuiltInRegistries.BLOCK.getTagOrEmpty(baseTag)) {
+            if (disallowTag == null || !blockHolder.is(disallowTag)) {
+                Item item = blockHolder.value().asItem();
+                if (item == null) {
+                    continue;
+                }
+
+                ItemStack itemStack = item.getDefaultInstance();
+                if (!itemStack.isEmpty()) {
+                    itemStacks.add(itemStack);
+                }
+            }
+        }
+        return itemStacks;
+    }
+
 
     /////////////////////////////////////////////////////////////////////////////////
 

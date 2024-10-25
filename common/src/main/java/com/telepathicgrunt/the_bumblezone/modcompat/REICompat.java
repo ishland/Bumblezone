@@ -16,6 +16,8 @@ import com.telepathicgrunt.the_bumblezone.modcompat.recipecategories.rei.REIQuee
 import com.telepathicgrunt.the_bumblezone.modinit.BzCreativeTabs;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzItems;
+import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
@@ -102,6 +104,28 @@ public class REICompat implements REIClientPlugin {
                         tagData.listSize()
                 ), QUEEN_RANDOMIZE_TRADES);
             }
+        }
+
+        List<ItemStack> hangingGardensFlowers = GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_FLOWERS_BLOCKS);
+        hangingGardensFlowers.addAll(GeneralUtils.convertBlockTagsToItemStacks(BzTags.HANGING_GARDEN_ALLOWED_TALL_FLOWERS_BLOCKS, BzTags.HANGING_GARDEN_FORCED_DISALLOWED_TALL_FLOWERS_BLOCKS));
+
+        addComplexBlockTagInfo(
+                Pair.of(".hanging_gardens_flowers.description", hangingGardensFlowers),
+                Pair.of(".crystalline_flower_can_be_placed_on.description",
+                        GeneralUtils.convertBlockTagsToItemStacks(BzTags.CRYSTALLINE_FLOWER_CAN_SURVIVE_ON, null))
+        );
+    }
+
+    @SafeVarargs
+    private static void addComplexBlockTagInfo(Pair<String, List<ItemStack>>... structureInfo) {
+        for (Pair<String, List<ItemStack>> predicatePair : structureInfo) {
+            BuiltinClientPlugin.getInstance().registerInformation(
+                    EntryIngredient.of(predicatePair.getSecond().stream().map(EntryStacks::of).toList()),
+                    Component.translatable(predicatePair.toString()),
+                    (text) -> {
+                        text.add(Component.translatable(Bumblezone.MODID + predicatePair.getFirst()));
+                        return text;
+                    });
         }
     }
 

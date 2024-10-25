@@ -31,10 +31,6 @@ subprojects {
                     "curse-id": "363949",
                     "modrinth-id": "eA8SXqWL"
             ],
-            "quilt": [
-                    "curse-id": "363949",
-                    "modrinth-id": "eA8SXqWL"
-            ],
             "forge": [
                     "curse-id": "362479",
                     "modrinth-id": "38tpSycf"
@@ -44,11 +40,6 @@ subprojects {
     Map<String, Map<String, Boolean>> platformDependencies = [
             "fabric": [
                     "fabric-api": true,
-                    "midnightlib": true,
-                    "better-advancements": false
-            ],
-            "quilt": [
-                    "qsl": true,
                     "midnightlib": true,
                     "better-advancements": false
             ],
@@ -146,12 +137,6 @@ allprojects {
     group = rootProject.maven_group
 
     repositories {
-        maven {
-            url = 'https://maven.quiltmc.org/repository/release'
-            content {
-                includeGroupByRegex 'org\\.quiltmc.*'
-            }
-        }
         maven {
             url = 'https://maven.shedaniel.me'
             content {
@@ -273,5 +258,5 @@ void minimizePNGFile(File file) {
 }
 
 task buildAndReleaseAll{
-    dependsOn(':common:buildAndRelease', ':forge:buildAndRelease', ':fabric:buildAndRelease', ':quilt:buildAndRelease')
+    dependsOn(':common:buildAndRelease', ':forge:buildAndRelease', ':fabric:buildAndRelease')
 }

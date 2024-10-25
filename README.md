@@ -29,9 +29,6 @@ dependencies {
    FABRIC: 
      modCompileOnly "com.telepathicgrunt:Bumblezone:<modversion>+1.20.1-fabric"
      
-   QUILT: 
-     modCompileOnly "com.telepathicgrunt:Bumblezone:<modversion>+1.20.1-quilt"
-     
    ARCH COMMON MODULE: 
      modCompileOnly "com.telepathicgrunt:Bumblezone:<modversion>+1.20.1-common"
 }
@@ -69,7 +66,7 @@ repositories {
         }
     }
     
-    // Fabric/Quilt only
+    // Fabric only
     maven {
         url = 'https://api.modrinth.com/maven/'
         content {
@@ -99,11 +96,6 @@ dependencies {
      modImplementation "earth.terrarium.athena:athena-fabric-1.20.1:3.1.1"
      modImplementation "maven.modrinth:midnightlib:1.4.1-fabric" 
    
-   QUILT: 
-     modImplementation "com.telepathicgrunt:Bumblezone:<modversion>+1.20.1-quilt"
-     modImplementation "earth.terrarium.athena:athena-fabric-1.20.1:3.1.1"
-     modImplementation "maven.modrinth:midnightlib:1.4.1-fabric" 
-     
    ARCH COMMON MODULE: 
      modCompileOnly "com.telepathicgrunt:Bumblezone:<modversion>+1.20.1-common"
 }

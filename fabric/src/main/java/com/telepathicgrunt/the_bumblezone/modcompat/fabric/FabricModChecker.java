@@ -4,6 +4,7 @@ import com.telepathicgrunt.the_bumblezone.modcompat.ModChecker;
 import com.telepathicgrunt.the_bumblezone.modcompat.fabricbase.RestrictedPortalsCompat;
 import com.telepathicgrunt.the_bumblezone.modcompat.fabricbase.SpectrumJetpackCompat;
 import com.telepathicgrunt.the_bumblezone.modcompat.fabricbase.TrinketsCompat;
+import com.telepathicgrunt.the_bumblezone.modcompat.fabricbase.ZenithCompat;
 
 import static com.telepathicgrunt.the_bumblezone.modcompat.ModChecker.loadupModCompat;
 import static com.telepathicgrunt.the_bumblezone.modcompat.ModChecker.printErrorToLogs;
@@ -27,6 +28,9 @@ public class FabricModChecker {
         try {
             modid = "trinkets";
             loadupModCompat(modid, () -> new TrinketsCompat());
+
+            modid = "zenith";
+            loadupModCompat(modid, () -> new ZenithCompat());
 
             modid = "spectrumjetpacks";
             loadupModCompat(modid, () -> new SpectrumJetpackCompat());

@@ -2,7 +2,6 @@ package com.telepathicgrunt.the_bumblezone.quilt;
 
 import com.telepathicgrunt.the_bumblezone.Bumblezone;
 import com.telepathicgrunt.the_bumblezone.configs.fabricbase.BzConfig;
-import com.telepathicgrunt.the_bumblezone.modcompat.quilt.QuiltModChecker;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 
@@ -14,7 +13,6 @@ public class BumblezoneQuilt implements ModInitializer {
         Bumblezone.init();
 
         QuiltEventManager.init();
-        QuiltModChecker.setupModCompat();
         QuiltEventManager.lateInit();
     }
 }

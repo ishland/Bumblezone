@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -103,6 +104,10 @@ public interface ModCompat {
     default void restrictFlight(Entity entity, double extraGravity) {
     }
 
+    default int maxLevelForEnchantment(Enchantment enchantment) {
+        return 0;
+    }
+
     enum Type {
         SPAWNS,
         EMPTY_BROOD,
@@ -116,6 +121,7 @@ public interface ModCompat {
         CUSTOM_EQUIPMENT_SLOTS,
         BEE_WEARABLES_BOOSTING,
         BEE_COLOR,
-        HEAVY_AIR_RESTRICTED
+        HEAVY_AIR_RESTRICTED,
+        ENCHANTMENT_MAX_LEVEL
     }
 }

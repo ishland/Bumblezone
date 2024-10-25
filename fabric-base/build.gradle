@@ -49,6 +49,8 @@ dependencies {
     modCompileOnly "curse.maven:restricted-portals-228266:${rootProject.restricted_portals_file_id}"
 
     modCompileOnly("maven.modrinth:sodium:${rootProject.sodium}")
+
+    modCompileOnly("curse.maven:zenith-620928:${project.zenith_file_id}")
 }
 
 processResources {

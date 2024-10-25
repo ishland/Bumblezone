@@ -70,12 +70,14 @@ dependencies {
 
     modCompileOnly("com.hollingsworth.ars_nouveau:ars_nouveau-${project.ars_nouveau}")
     modCompileOnly("curse.maven:ars_elemental-561470:${project.ars_elemental_file_id}")
+    modCompileOnly("curse.maven:mekanism-268560:${project.mekanism_file_id}")
+    modCompileOnly("curse.maven:apotheosis-313970:${project.apotheosis_file_id}")
+    modCompileOnly("top.theillusivec4.curios:curios-forge:${project.curios}:api")
 
     // modRuntimeOnly("curse.maven:better-advancements-272515:4631253")
     // modRuntimeOnly("curse.maven:spit-it-out-857141:4614678")
     // modRuntimeOnly("curse.maven:atlasviewer-633577:4597419")
 
-    modCompileOnly("curse.maven:mekanism-268560:${project.mekanism_file_id}")
     //modCompileOnly("mekanism:Mekanism:${project.mekanism}:api")
 //    modRuntimeOnly("mekanism:Mekanism:${project.mekanism}")// core
 //    modRuntimeOnly("mekanism:Mekanism:${project.mekanism}:additions")// Mekanism: Additions
@@ -92,7 +94,6 @@ dependencies {
     //modRuntimeOnly("dev.architectury:architectury-forge:${project.architectury}")
     //modRuntimeOnly("curse.maven:travelersbackpacks-321117:${project.travelersbackpacks_file_id}")
     //modRuntimeOnly("top.theillusivec4.curios:curios-forge:${project.curios}")
-    modCompileOnly("top.theillusivec4.curios:curios-forge:${project.curios}:api")
 
     // modRuntimeOnly("curse.maven:huge-structure-blocks-474114:4803547")
     // modRuntimeOnly("curse.maven:worldedit-225608:4586218")

@@ -45,6 +45,9 @@ public class ForgeModChecker {
             modid = "dragonenchants";
             loadupModCompat(modid, () -> new DragonEnchantsCompat());
 
+            modid = "apotheosis";
+            loadupModCompat(modid, () -> new ApotheosisCompat());
+
             modid = "curios";
             loadupModCompat(modid, () -> new CuriosCompat());
 

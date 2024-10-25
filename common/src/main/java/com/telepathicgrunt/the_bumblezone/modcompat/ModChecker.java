@@ -24,6 +24,7 @@ public class ModChecker {
 	public static final List<ModCompat> BEE_WEARABLES_BOOSTING_COMPATS = new ArrayList<>();
 	public static final List<ModCompat> BEE_COLOR_COMPATS = new ArrayList<>();
 	public static final List<ModCompat> HEAVY_AIR_RESTRICTED_COMPATS = new ArrayList<>();
+	public static final List<ModCompat> ENCHANTMENT_MAX_LEVEL_COMPATS = new ArrayList<>();
 
 	public static boolean productiveBeesPresent = false;
 	public static boolean resourcefulBeesPresent = false;
@@ -34,9 +35,10 @@ public class ModChecker {
 	public static boolean beekeeperPresent = false;
 	public static boolean quarkPresent = false;
 	public static boolean potionOfBeesPresent = false;
-	public static boolean requiemPresent = false;
 	public static boolean twilightForestPresent = false;
 	public static boolean dragonEnchantsPresent = false;
+	public static boolean apotheosisPresent = false;
+	public static boolean zenithPresent = false;
 	public static boolean rubidiumPresent = false;
 	public static boolean goodallPresent = false;
 	public static boolean backpackedPresent = false;
@@ -122,6 +124,7 @@ public class ModChecker {
 				if (compat.compatTypes().contains(ModCompat.Type.BEE_WEARABLES_BOOSTING)) BEE_WEARABLES_BOOSTING_COMPATS.add(compat);
 				if (compat.compatTypes().contains(ModCompat.Type.BEE_COLOR)) BEE_COLOR_COMPATS.add(compat);
 				if (compat.compatTypes().contains(ModCompat.Type.HEAVY_AIR_RESTRICTED)) HEAVY_AIR_RESTRICTED_COMPATS.add(compat);
+				if (compat.compatTypes().contains(ModCompat.Type.ENCHANTMENT_MAX_LEVEL)) ENCHANTMENT_MAX_LEVEL_COMPATS.add(compat);
 			}
 		}
 		catch (Throwable e) {

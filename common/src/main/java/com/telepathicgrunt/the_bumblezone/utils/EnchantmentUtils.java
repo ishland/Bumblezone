@@ -1,6 +1,8 @@
 package com.telepathicgrunt.the_bumblezone.utils;
 
 import com.telepathicgrunt.the_bumblezone.configs.BzGeneralConfigs;
+import com.telepathicgrunt.the_bumblezone.modcompat.ModChecker;
+import com.telepathicgrunt.the_bumblezone.modcompat.ModCompat;
 import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -74,7 +76,12 @@ public class EnchantmentUtils {
 			}
 
 			if (forceAllowed || (!(enchantment.isTreasureOnly() && !allowTreasure) && enchantment.isDiscoverable() && (canApplyAtEnchantingTable(enchantment, stack) || (bookFlag && isAllowedOnBooks(enchantment))))) {
-				for(int i = enchantment.getMaxLevel(); i > minLevelAllowed - 1; --i) {
+				int maxLevelForEnchant = enchantment.getMaxLevel();
+				for (ModCompat compat : ModChecker.ENCHANTMENT_MAX_LEVEL_COMPATS) {
+					maxLevelForEnchant = compat.maxLevelForEnchantment(enchantment);
+				}
+
+				for(int i = maxLevelForEnchant; i > minLevelAllowed - 1; --i) {
 					if (forceAllowed || level >= enchantment.getMinCost(i)) {
 						EnchantmentInstance enchantmentInstance = new EnchantmentInstance(enchantment, xpTier <= 2 ? 1 : i);
 						if (xpTier > EnchantmentUtils.getEnchantmentTierCost(enchantmentInstance)) {

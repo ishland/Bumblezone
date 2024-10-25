@@ -1,3 +1,9 @@
+### **(V.7.5.3 Changes) (1.20.1 Minecraft)**
+
+#### Blocks:
+Made Crystalline Flower respect maximum level for enchantments when set by Apotheosis or Zenith.
+
+
 ### **(V.7.5.2 Changes) (1.20.1 Minecraft)**
 
 #### Advancements:

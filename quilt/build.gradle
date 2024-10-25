@@ -79,16 +79,6 @@ dependencies {
     modCompileOnly("maven.modrinth:modmenu:${rootProject.mod_menu}")
     modRuntimeOnly("maven.modrinth:modmenu:${rootProject.mod_menu}")
 
-    modCompileOnly("io.github.ladysnake:requiem-api:${rootProject.requiem}") {
-        transitive = false
-    }
-    modCompileOnly("io.github.ladysnake:requiem-core:${rootProject.requiem}") {
-        transitive = false
-    }
-    modCompileOnly("io.github.ladysnake:requiem:${rootProject.requiem}") {
-        transitive = false
-    }
-
     //modLocalRuntime("com.telepathicgrunt:CommandStructures-Fabric:${project.commandstructures_fabric}")
     //modLocalRuntime("com.telepathicgrunt:StructureVoidToggle-Fabric:${project.structurevoidtoggle_fabric}")
 }

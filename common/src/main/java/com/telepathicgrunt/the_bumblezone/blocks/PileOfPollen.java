@@ -1,5 +1,7 @@
 package com.telepathicgrunt.the_bumblezone.blocks;
 
+import com.google.common.collect.MapMaker;
+import com.mojang.datafixers.util.Pair;
 import com.telepathicgrunt.the_bumblezone.entities.nonliving.PollenPuffEntity;
 import com.telepathicgrunt.the_bumblezone.items.HoneyBeeLeggings;
 import com.telepathicgrunt.the_bumblezone.mixin.blocks.FallingBlockEntityAccessor;
@@ -54,7 +56,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.concurrent.ConcurrentMap;
+
 public class PileOfPollen extends FallingBlock {
+    protected static final ConcurrentMap<String, Pair<Integer, Integer>> APPLIED_FALL_REDUCTION_FOR_ENTITY = new MapMaker().concurrencyLevel(2).weakKeys().makeMap();
+
     public static final IntegerProperty LAYERS = BlockStateProperties.LAYERS;
     protected static final VoxelShape[] SHAPE_BY_LAYER = new VoxelShape[]{
             Shapes.empty(),
@@ -223,22 +229,61 @@ public class PileOfPollen extends FallingBlock {
         }
     }
 
+    public static void slowFallSpeed(Entity entity, BlockPos blockPos, int slownessPower) {
+        double speedReduction = (entity instanceof Projectile) ? 0.85D : 1 - (slownessPower * 0.1D);
+
+        ItemStack beeLeggings = HoneyBeeLeggings.getEntityBeeLegging(entity);
+        if (!beeLeggings.isEmpty()) {
+            speedReduction = Math.max(0.9D, speedReduction);
+        }
+
+        Vec3 deltaMovement = entity.getDeltaMovement();
+        double newYDelta = deltaMovement.y;
+
+        if (entity instanceof ServerPlayer serverPlayer) {
+            if (serverPlayer.fallDistance > 18 &&
+                newYDelta < -0.9D &&
+                slownessPower >= 6)
+            {
+                BzCriterias.FALLING_ON_POLLEN_BLOCK_TRIGGER.trigger(serverPlayer);
+            }
+        }
+
+        if (deltaMovement.y > 0) {
+            newYDelta *= (1D - (slownessPower * 0.01D));
+        }
+        else if (!(entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(MobEffects.SLOW_FALLING))) {
+            newYDelta *= (0.7D - (slownessPower * 0.07D));
+        }
+
+        if (!entity.getType().is(BzTags.PILE_OF_POLLEN_CANNOT_SLOW)) {
+            entity.setDeltaMovement(new Vec3(
+                    deltaMovement.x * speedReduction,
+                    newYDelta,
+                    deltaMovement.z * speedReduction));
+        }
+
+        if (!entity.onGround()) {
+            entity.fallDistance = Math.min(entity.fallDistance, (float) Math.abs(newYDelta) / 0.07f);
+        }
+    }
+
     /**
      * Slows all entities inside the block.
      */
     @Override
-    public void entityInside(BlockState blockState, Level world, BlockPos blockPos, Entity entity) {
+    public void entityInside(BlockState blockState, Level level, BlockPos blockPos, Entity entity) {
         if (!blockState.is(BzBlocks.PILE_OF_POLLEN.get())) {
             return;
         }
 
         // make falling block of this block stack the pollen or else destroy it
         if(entity instanceof FallingBlockEntity) {
-            if(((FallingBlockEntity) entity).getBlockState().isAir() || world.isClientSide())
+            if(((FallingBlockEntity) entity).getBlockState().isAir() || level.isClientSide())
                 return;
 
             if(((FallingBlockEntity)entity).getBlockState().is(BzBlocks.PILE_OF_POLLEN.get())) {
-                stackPollen(blockState, world, blockPos, ((FallingBlockEntity)entity).getBlockState());
+                stackPollen(blockState, level, blockPos, ((FallingBlockEntity)entity).getBlockState());
                 entity.discard();
 
                 // Prevents the FallingBlock's checkInsideBlocks from triggering this
@@ -246,10 +291,10 @@ public class PileOfPollen extends FallingBlock {
                 ((FallingBlockEntityAccessor) entity).setBlockState(Blocks.AIR.defaultBlockState());
             }
             else {
-                world.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
-                if(world.isClientSide()) {
+                level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+                if(level.isClientSide()) {
                     for(int i = 0; i < blockState.getValue(LAYERS) * 30; i++) {
-                        spawnParticles(blockState, world, blockPos, world.random, true);
+                        spawnParticles(blockState, level, blockPos, level.random, true);
                     }
                 }
             }
@@ -257,15 +302,15 @@ public class PileOfPollen extends FallingBlock {
 
         // Make pollen puff entity grow pile of pollen
         else if(entity instanceof PollenPuffEntity pollenPuffEntity) {
-            if(pollenPuffEntity.isConsumed() || !GeneralUtils.isPermissionAllowedAtSpot(world, pollenPuffEntity.getOwner(), blockPos, true)) return; // do not run this code if a block already was set.
+            if(pollenPuffEntity.isConsumed() || !GeneralUtils.isPermissionAllowedAtSpot(level, pollenPuffEntity.getOwner(), blockPos, true)) return; // do not run this code if a block already was set.
 
-            stackPollen(blockState, world, blockPos, BzBlocks.PILE_OF_POLLEN.get().defaultBlockState());
+            stackPollen(blockState, level, blockPos, BzBlocks.PILE_OF_POLLEN.get().defaultBlockState());
             pollenPuffEntity.remove(Entity.RemovalReason.DISCARDED);
             pollenPuffEntity.consumed();
 
-            if(world.isClientSide()) {
+            if(level.isClientSide()) {
                 for(int i = 0; i < 50; i++) {
-                    spawnParticles(world, pollenPuffEntity.position(), world.random, 0.055D, 0.0075D, 0);
+                    spawnParticles(level, pollenPuffEntity.position(), level.random, 0.055D, 0.0075D, 0);
                 }
             }
         }
@@ -273,56 +318,35 @@ public class PileOfPollen extends FallingBlock {
         // slows the entity and spawns particles
         else if (!(entity instanceof ExperienceOrb)) {
             int layerValueMinusOne = blockState.getValue(LAYERS) - 1;
-            double speedReduction = (entity instanceof Projectile) ? 0.85D : 1 - (layerValueMinusOne * 0.1D);
+            double entitySpeed = entity.getDeltaMovement().length();
             double chance = 0.22D + layerValueMinusOne * 0.09D;
 
-            ItemStack beeLeggings = HoneyBeeLeggings.getEntityBeeLegging(entity);
-            if (!beeLeggings.isEmpty()) {
-                speedReduction = Math.max(0.9D, speedReduction);
-            }
-
-            Vec3 deltaMovement = entity.getDeltaMovement();
-            double newYDelta = deltaMovement.y;
-
-            if (entity instanceof ServerPlayer serverPlayer &&
-                serverPlayer.fallDistance > 18 &&
-                newYDelta < -0.9D &&
-                blockState.getValue(LAYERS) >= 7)
+            Pair<Integer, Integer> reduction = APPLIED_FALL_REDUCTION_FOR_ENTITY.getOrDefault(entity.getStringUUID(), null);
+            if (reduction == null ||
+                reduction.getFirst() != entity.tickCount ||
+                (reduction.getSecond() < layerValueMinusOne && reduction.getFirst() == entity.tickCount))
             {
-                BzCriterias.FALLING_ON_POLLEN_BLOCK_TRIGGER.trigger(serverPlayer);
+                int diffInLayer = reduction == null ? layerValueMinusOne : layerValueMinusOne - reduction.getSecond();
+                slowFallSpeed(entity, blockPos, diffInLayer);
+                APPLIED_FALL_REDUCTION_FOR_ENTITY.put(entity.getStringUUID(), Pair.of(entity.tickCount, layerValueMinusOne));
             }
 
-            if (deltaMovement.y > 0) {
-                newYDelta *= (1D - layerValueMinusOne * 0.01D);
-            }
-            else if (!(entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(MobEffects.SLOW_FALLING))) {
-                newYDelta *= (0.84D - layerValueMinusOne * 0.03D);
-            }
-
-            if (!entity.getType().is(BzTags.PILE_OF_POLLEN_CANNOT_SLOW)) {
-                entity.setDeltaMovement(new Vec3(
-                        deltaMovement.x * speedReduction,
-                        newYDelta,
-                        deltaMovement.z * speedReduction));
-            }
-
-            double entitySpeed = entity.getDeltaMovement().length();
 
             // Need to multiply speed to avoid issues where tiny movement is seen as zero.
-            if(entitySpeed > 0.00001D && world.random.nextFloat() < chance) {
+            if(entitySpeed > 0.00001D && level.random.nextFloat() < chance) {
                 int particleNumber = (int) (entitySpeed / 0.0045D);
                 int particleStrength = (entity instanceof ItemEntity) ? Math.min(10, particleNumber / 3) : Math.min(20, particleNumber);
 
-                if(world.isClientSide()) {
+                if(level.isClientSide()) {
                     for(int i = 0; i < particleNumber; i++) {
-                        if(particleNumber > 5) spawnParticles(blockState, world, blockPos, world.random, true);
+                        if(particleNumber > 5) spawnParticles(blockState, level, blockPos, level.random, true);
 
                         spawnParticles(
-                                world,
+                                level,
                                 entity.position()
                                         .add(entity.getDeltaMovement().multiply(2D, 2D, 2D))
                                         .add(0, 0.75D, 0),
-                                world.random,
+                                level.random,
                                 0.006D * particleStrength,
                                 0.00075D * particleStrength,
                                 0.006D * particleStrength);
@@ -331,11 +355,11 @@ public class PileOfPollen extends FallingBlock {
                 // Player and item entity runs this method on client side already so do not run it on server to reduce particle packet spam
                 else if (!(entity instanceof Player || entity instanceof ItemEntity)) {
                     spawnParticlesServer(
-                            world,
+                            level,
                             entity.position()
                                     .add(entity.getDeltaMovement().multiply(2D, 2D, 2D))
                                     .add(0, 0.75D, 0),
-                            world.random,
+                            level.random,
                             0.006D * particleStrength,
                             0.00075D * particleStrength,
                             0.006D * particleStrength,
@@ -348,10 +372,10 @@ public class PileOfPollen extends FallingBlock {
                 ((BeeEntityInvoker)entity).callSetHasNectar(true);
                 ((Bee)entity).resetTicksWithoutNectarSinceExitingHive();
                 if(layerValueMinusOne == 0) {
-                    world.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+                    level.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
                 }
                 else {
-                    world.setBlock(blockPos, blockState.setValue(LAYERS, layerValueMinusOne), 3);
+                    level.setBlock(blockPos, blockState.setValue(LAYERS, layerValueMinusOne), 3);
                 }
             }
 
@@ -362,8 +386,8 @@ public class PileOfPollen extends FallingBlock {
 
             // make entity invisible if hidden inside
             if(!entity.level().isClientSide() &&
-                entity instanceof LivingEntity livingEntity &&
-                !livingEntity.hasEffect(BzEffects.HIDDEN.get()))
+                    entity instanceof LivingEntity livingEntity &&
+                    !livingEntity.hasEffect(BzEffects.HIDDEN.get()))
             {
                 applyHiddenEffectIfBuried(livingEntity, blockState, blockPos);
             }

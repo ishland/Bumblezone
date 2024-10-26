@@ -1,5 +1,9 @@
 ### **(V.7.5.4 Changes) (1.20.1 Minecraft)**
 
+#### Blocks:
+Pile of Pollen will now affect the fallDistance field on the entity falling into it.
+ Meaning now it should properly reduce fall damage when falling into it where before, it did not change the fall damage based on your fall height.
+
 #### Items:
 Made Life Essence not turn Dead Bush into certain modded Saplings now by no longer using #saplings tag in 
  the `the_bumblezone:essence/life/dead_bush_rveives_to` block tag.

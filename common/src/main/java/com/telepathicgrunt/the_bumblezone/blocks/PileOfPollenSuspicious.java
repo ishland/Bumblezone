@@ -1,5 +1,6 @@
 package com.telepathicgrunt.the_bumblezone.blocks;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.blocks.blockentities.StateFocusedBrushableBlockEntity;
@@ -58,6 +59,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+
+import static com.telepathicgrunt.the_bumblezone.blocks.PileOfPollen.APPLIED_FALL_REDUCTION_FOR_ENTITY;
+import static com.telepathicgrunt.the_bumblezone.blocks.PileOfPollen.slowFallSpeed;
 
 public class PileOfPollenSuspicious extends BrushableBlock implements StateReturningBrushableBlock {
     protected static final VoxelShape SHAPE = Shapes.block();
@@ -232,36 +236,18 @@ public class PileOfPollenSuspicious extends BrushableBlock implements StateRetur
         // slows the entity and spawns particles
         if (!(entity instanceof ExperienceOrb)) {
             int layerValueMinusOne = 7;
-            double speedReduction = (entity instanceof Projectile) ? 0.85D : 1 - (layerValueMinusOne * 0.1D);
+            double entitySpeed = entity.getDeltaMovement().length();
             double chance = 0.22D + layerValueMinusOne * 0.09D;
 
-            ItemStack beeLeggings = entity instanceof LivingEntity livingEntity ? HoneyBeeLeggings.getEntityBeeLegging(livingEntity) : ItemStack.EMPTY;
-            if(!beeLeggings.isEmpty()) {
-                speedReduction = Math.max(0.9D, speedReduction);
+            Pair<Integer, Integer> reduction = APPLIED_FALL_REDUCTION_FOR_ENTITY.getOrDefault(entity.getStringUUID(), null);
+            if (reduction == null ||
+                    reduction.getFirst() != entity.tickCount ||
+                    (reduction.getSecond() < layerValueMinusOne && reduction.getFirst() == entity.tickCount))
+            {
+                int diffInLayer = reduction == null ? layerValueMinusOne : layerValueMinusOne - reduction.getSecond();
+                slowFallSpeed(entity, blockPos, diffInLayer);
+                APPLIED_FALL_REDUCTION_FOR_ENTITY.put(entity.getStringUUID(), Pair.of(entity.tickCount, layerValueMinusOne));
             }
-
-            Vec3 deltaMovement = entity.getDeltaMovement();
-            double newYDelta = deltaMovement.y;
-
-            if(entity instanceof ServerPlayer serverPlayer && entity.fallDistance > 18 && newYDelta < -0.9D) {
-                BzCriterias.FALLING_ON_POLLEN_BLOCK_TRIGGER.get().trigger(serverPlayer);
-            }
-
-            if (!entity.getType().is(BzTags.PILE_OF_POLLEN_CANNOT_SLOW)) {
-                if(deltaMovement.y > 0) {
-                    newYDelta *= (1D - layerValueMinusOne * 0.01D);
-                }
-                else if (!(entity instanceof LivingEntity livingEntity && livingEntity.hasEffect(MobEffects.SLOW_FALLING))) {
-                    newYDelta *= (0.84D - layerValueMinusOne * 0.03D);
-                }
-
-                entity.setDeltaMovement(new Vec3(
-                        deltaMovement.x * speedReduction,
-                        newYDelta,
-                        deltaMovement.z * speedReduction));
-            }
-
-            double entitySpeed = entity.getDeltaMovement().length();
 
             // Need to multiply speed to avoid issues where tiny movement is seen as zero.
             if(entitySpeed > 0.00001D && world.random.nextFloat() < chance) {

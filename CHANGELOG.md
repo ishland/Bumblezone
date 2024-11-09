@@ -6,7 +6,7 @@ Pile of Pollen will now affect the fallDistance field on the entity falling into
 
 #### Items:
 Made Life Essence not turn Dead Bush into certain modded Saplings now by no longer using #saplings tag in
- the `the_bumblezone:essence/life/dead_bush_rveives_to` block tag.
+ the `the_bumblezone:essence/life/dead_bush_revives_to` block tag.
 
 #### Structures:
 Fixed features able to spawn in structures that they are not supposed to spawn in. 

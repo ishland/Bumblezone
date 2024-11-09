@@ -6,7 +6,7 @@ Pile of Pollen will now affect the fallDistance field on the entity falling into
 
 #### Items:
 Made Life Essence not turn Dead Bush into certain modded Saplings now by no longer using #saplings tag in 
- the `the_bumblezone:essence/life/dead_bush_rveives_to` block tag.
+ the `the_bumblezone:essence/life/dead_bush_revives_to` block tag.
 
 #### Mod Compat:
 EMI, REI, and JEI will have info pages for flowers that show up in Hanging Garden and for blocks that can support Crystalline Flower.

@@ -36,8 +36,8 @@
       "type": "the_bumblezone:structure_disallow_by_tag",
       "disallow_tag": "the_bumblezone:throne_pillar",
       "piecewise_check": true,
-      "min_y": 126,
-      "max_y": 150
+      "min_y": 125,
+      "max_y": 145
     },
     {
       "type": "minecraft:biome"

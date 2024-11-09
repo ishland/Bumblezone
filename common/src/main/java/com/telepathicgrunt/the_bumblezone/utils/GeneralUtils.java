@@ -872,7 +872,7 @@ public class GeneralUtils {
         ImmutableList.Builder<StructureStart> builder = ImmutableList.builder();
         for(Map.Entry<Structure, LongSet> entry : references.entrySet()) {
             if (structureMatch.test(entry.getKey())) {
-                fillStartsForStructure(level, structureManager, chunkAccess, entry.getKey(), entry.getValue(), builder::add);
+                fillStartsForStructure(level, structureManager, entry.getKey(), entry.getValue(), builder::add);
             }
         }
         return builder.build();
@@ -882,14 +882,14 @@ public class GeneralUtils {
         ChunkAccess chunkAccess = level.getChunk(sectionPos.x(), sectionPos.z(), ChunkStatus.STRUCTURE_REFERENCES);
         LongSet references = chunkAccess.getReferencesForStructure(structure);
         ImmutableList.Builder<StructureStart> builder = ImmutableList.builder();
-        fillStartsForStructure(level, structureManager, chunkAccess, structure, references, builder::add);
+        fillStartsForStructure(level, structureManager, structure, references, builder::add);
         return builder.build();
     }
 
-    public static void fillStartsForStructure(LevelReader level, StructureManager structureManager, ChunkAccess chunkAccess, Structure structure, LongSet references, Consumer<StructureStart> consumer) {
+    public static void fillStartsForStructure(LevelReader level, StructureManager structureManager, Structure structure, LongSet references, Consumer<StructureStart> consumer) {
         for (long ref : references) {
             SectionPos sectionPos = SectionPos.of(new ChunkPos(ref), level.getMinSection());
-            StructureStart structureStart = structureManager.getStartForStructure(sectionPos, structure, chunkAccess);
+            StructureStart structureStart = structureManager.getStartForStructure(sectionPos, structure, level.getChunk(sectionPos.x(), sectionPos.z(), ChunkStatus.STRUCTURE_STARTS));
             if (structureStart != null && structureStart.isValid()) {
                 consumer.accept(structureStart);
             }

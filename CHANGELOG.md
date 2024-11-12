@@ -1,3 +1,12 @@
+### **(V.7.5.5 Changes) (1.20.1 Minecraft)**
+
+#### Blocks:
+Fixed floating in Windy Air causing client disconnect from servers where server has flying disabled.
+
+#### Items:
+Fixed flying with Bumblebee Chestplate causing client disconnect from servers where server has flying disabled.
+
+
 ### **(V.7.5.4 Changes) (1.20.1 Minecraft)**
 
 #### Blocks:

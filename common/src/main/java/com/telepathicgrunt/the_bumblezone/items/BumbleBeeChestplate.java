@@ -2,6 +2,7 @@ package com.telepathicgrunt.the_bumblezone.items;
 
 import com.telepathicgrunt.the_bumblezone.client.LivingEntityFlyingSoundInstance;
 import com.telepathicgrunt.the_bumblezone.mixin.entities.LivingEntityAccessor;
+import com.telepathicgrunt.the_bumblezone.mixin.gameplay.ServerGamePacketListenerImplAccessor;
 import com.telepathicgrunt.the_bumblezone.modinit.BzCriterias;
 import com.telepathicgrunt.the_bumblezone.modinit.BzEffects;
 import com.telepathicgrunt.the_bumblezone.modinit.BzSounds;
@@ -45,22 +46,22 @@ public class BumbleBeeChestplate extends BeeArmor {
         boolean isFlying = tag.getBoolean("isFlying");
 
         if (player.getCooldowns().isOnCooldown(itemstack.getItem())) {
-            if(isFlying) {
+            if (isFlying) {
                 tag.putBoolean("isFlying", false);
             }
             return;
         }
 
         int flyCounter = tag.getInt("flyCounter");
-        if(world.isClientSide()) {
+        if (world.isClientSide()) {
             if (flyCounter > 0 && !player.onGround() && !player.isInWater() && ((LivingEntityAccessor)player).isJumping() && !player.getAbilities().flying && !player.isPassenger() && !player.onClimbable()) {
-                if(!isFlying) {
+                if (!isFlying) {
                     LivingEntityFlyingSoundInstance.playSound(player, BzSounds.BUMBLE_BEE_CHESTPLATE_FLYING.get());
                     BumbleBeeChestplateFlyingPacket.sendToServer(true);
                     tag.putBoolean("isFlying", true);
                 }
             }
-            else if(isFlying) {
+            else if (isFlying) {
                 LivingEntityFlyingSoundInstance.stopSound(player, BzSounds.BUMBLE_BEE_CHESTPLATE_FLYING.get());
                 BumbleBeeChestplateFlyingPacket.sendToServer(false);
                 tag.putBoolean("isFlying", false);
@@ -72,11 +73,11 @@ public class BumbleBeeChestplate extends BeeArmor {
         boolean isBeenergized = beenergized != null;
 
         isFlying = tag.getBoolean("isFlying");
-        if(isFlying) {
-            if(flyCounter > 0) {
+        if (isFlying) {
+            if (flyCounter > 0) {
                 Vec3 velocity = player.getDeltaMovement();
                 double additiveSpeed = velocity.y() > 0 ? velocity.y() > 0.1D ? 0.06D : 0.080D : 0.13D;
-                if(isBeenergized) {
+                if (isBeenergized) {
                     additiveSpeed += (beenergized.getAmplifier() + 1) * 0.0125D;
                 }
 
@@ -87,7 +88,7 @@ public class BumbleBeeChestplate extends BeeArmor {
                         velocity.z()
                 );
 
-                if(newYSpeed > -0.3) {
+                if (newYSpeed > -0.3) {
                     player.fallDistance = 0;
                 }
                 else if (newYSpeed <= -0.3) {
@@ -95,23 +96,25 @@ public class BumbleBeeChestplate extends BeeArmor {
                 }
 
                 tag.putInt("flyCounter", flyCounter - 1);
-                if(!world.isClientSide() && player.getRandom().nextFloat() < 0.0025f) {
+                if (!world.isClientSide() && player.getRandom().nextFloat() < 0.0025f) {
                     itemstack.hurtAndBreak(1, player, (playerEntity) -> playerEntity.broadcastBreakEvent(EquipmentSlot.CHEST));
                 }
 
-                if(player instanceof ServerPlayer serverPlayer) {
+                if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.awardStat(BzStats.BUMBLE_BEE_CHESTPLATE_FLY_TIME_RL.get());
+                    ((ServerGamePacketListenerImplAccessor)serverPlayer.connection).setAboveGroundTickCount(0);
+                    ((ServerGamePacketListenerImplAccessor)serverPlayer.connection).setAboveGroundVehicleTickCount(0);
                 }
             }
             else {
                 tag.putBoolean("isFlying", false);
-                if(beeWearablesCount >= 4 && player instanceof ServerPlayer serverPlayer) {
+                if (beeWearablesCount >= 4 && player instanceof ServerPlayer serverPlayer) {
                     BzCriterias.BUMBLE_BEE_CHESTPLATE_MAX_FLIGHT_TRIGGER.trigger(serverPlayer);
                 }
             }
         }
 
-        if(player.onGround()) {
+        if (player.onGround()) {
             if (tag.contains("forcedMaxFlyingTickTime")) {
                 if (!tag.contains("requiredWearablesCountForForcedFlyingTime") || tag.getInt("requiredWearablesCountForForcedFlyingTime") >= beeWearablesCount) {
                     tag.putInt("flyCounter", tag.getInt("forcedMaxFlyingTickTime"));

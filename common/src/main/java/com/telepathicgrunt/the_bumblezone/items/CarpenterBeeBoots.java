@@ -216,7 +216,7 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
                                 }
 
                                 if ((level.getGameTime() - hangStartTime) >= maxHangTime) {
-                                    hangCooldownStartTime = HANGING_COOLDOWN_IN_TICKS;
+                                    hangCooldownStartTime = level.getGameTime();
                                     hangStartTime = 0;
                                 }
                                 else if(player instanceof ServerPlayer serverPlayer) {
@@ -238,7 +238,7 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
         }
         else if (!level.isClientSide() &&
                 hangCooldownStartTime != - 1 &&
-                hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS > level.getGameTime())
+                hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS < level.getGameTime())
         {
             hangCooldownStartTime = -1;
         }

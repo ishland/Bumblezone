@@ -2,6 +2,7 @@ package com.telepathicgrunt.the_bumblezone.items;
 
 import com.telepathicgrunt.the_bumblezone.client.LivingEntityFlyingSoundInstance;
 import com.telepathicgrunt.the_bumblezone.items.datacomponents.BumbleBeeChestplateData;
+import com.telepathicgrunt.the_bumblezone.mixin.gameplay.ServerGamePacketListenerImplAccessor;
 import com.telepathicgrunt.the_bumblezone.mixin.entities.LivingEntityAccessor;
 import com.telepathicgrunt.the_bumblezone.modinit.BzCriterias;
 import com.telepathicgrunt.the_bumblezone.modinit.BzDataComponents;
@@ -116,6 +117,8 @@ public class BumbleBeeChestplate extends BeeArmor {
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     serverPlayer.awardStat(BzStats.BUMBLE_BEE_CHESTPLATE_FLY_TIME_RL.get());
+                    ((ServerGamePacketListenerImplAccessor)serverPlayer.connection).setAboveGroundTickCount(0);
+                    ((ServerGamePacketListenerImplAccessor)serverPlayer.connection).setAboveGroundVehicleTickCount(0);
                 }
             }
             else {

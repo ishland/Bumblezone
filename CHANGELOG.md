@@ -1,3 +1,9 @@
+### **(V.7.7.7 Changes) (1.21.1 Minecraft)**
+
+#### Items:
+Fixed Carpenter Bee Boots not gripping comb/wood/leaves walls properly
+
+
 ### **(V.7.7.6 Changes) (1.21.1 Minecraft)**
 
 #### Blocks:

@@ -172,7 +172,7 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
         CarpenterBeeBootsHangingData carpenterBeeBootsHangingData = itemStack.get(BzDataComponents.CARPENTER_BEE_BOOTS_HANGING_DATA.get());
         long hangStartTime = carpenterBeeBootsHangingData.hangStartTime();
         long hangCooldownStartTime = carpenterBeeBootsHangingData.hangCooldownStartTime();
-        if(!level.isClientSide() && hangStartTime != -1 && player.onGround()) {
+        if (!level.isClientSide() && hangStartTime != -1 && player.onGround()) {
             hangStartTime = -1;
         }
 
@@ -216,7 +216,7 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
                                 }
 
                                 if ((level.getGameTime() - hangStartTime) >= maxHangTime) {
-                                    hangCooldownStartTime = HANGING_COOLDOWN_IN_TICKS;
+                                    hangCooldownStartTime = level.getGameTime();
                                     hangStartTime = 0;
                                 }
                                 else if(player instanceof ServerPlayer serverPlayer) {
@@ -238,9 +238,10 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
         }
         else if (!level.isClientSide() &&
                 hangCooldownStartTime != - 1 &&
-                hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS > level.getGameTime())
+                hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS < level.getGameTime())
         {
             hangCooldownStartTime = -1;
+            hangStartTime = -1;
         }
 
         if (carpenterBeeBootsHangingData.isDifferent(hangStartTime, hangCooldownStartTime)) {

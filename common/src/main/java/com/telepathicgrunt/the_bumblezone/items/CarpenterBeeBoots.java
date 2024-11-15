@@ -172,10 +172,8 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
         CarpenterBeeBootsHangingData carpenterBeeBootsHangingData = itemStack.get(BzDataComponents.CARPENTER_BEE_BOOTS_HANGING_DATA.get());
         long hangStartTime = carpenterBeeBootsHangingData.hangStartTime();
         long hangCooldownStartTime = carpenterBeeBootsHangingData.hangCooldownStartTime();
-        if (!level.isClientSide()) {
-            if (hangStartTime != -1 && player.onGround()) {
-                hangStartTime = -1;
-            }
+        if (!level.isClientSide() && hangStartTime != -1 && player.onGround()) {
+            hangStartTime = -1;
         }
 
         double playerDeltaY = player.getDeltaMovement().y();
@@ -238,7 +236,10 @@ public class CarpenterBeeBoots extends BeeArmor implements ItemExtension {
                 }
             }
         }
-        else if (!level.isClientSide() && !player.onGround() && hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS < level.getGameTime()) {
+        else if (!level.isClientSide() &&
+                hangCooldownStartTime != - 1 &&
+                hangCooldownStartTime + HANGING_COOLDOWN_IN_TICKS < level.getGameTime())
+        {
             hangCooldownStartTime = -1;
             hangStartTime = -1;
         }

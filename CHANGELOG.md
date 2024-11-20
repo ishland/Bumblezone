@@ -1,5 +1,8 @@
 ### **(V.7.7.8 Changes) (1.21.1 Minecraft)**
 
+#### Items:
+Fixed Bee-laxing with the Hom-bees Music DIsc missing Bandcamp link in tooltip.
+
 #### Misc:
 Fixed a possible bug where the no-feature-spawning-in-structure code could crash on edge of super massive structures.
 

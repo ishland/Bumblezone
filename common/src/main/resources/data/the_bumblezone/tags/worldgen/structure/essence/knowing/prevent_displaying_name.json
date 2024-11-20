@@ -20,6 +20,26 @@
     {
       "id": "alexscaves:dino_bowl",
       "required": false
+    },
+    {
+      "id": "betterend:megalake",
+      "required": false
+    },
+    {
+      "id": "betterend:megalake_small",
+      "required": false
+    },
+    {
+      "id": "betterend:mountain",
+      "required": false
+    },
+    {
+      "id": "betterend:painted_mountain",
+      "required": false
+    },
+    {
+      "id": "tht:world_gen",
+      "required": false
     }
   ]
 }

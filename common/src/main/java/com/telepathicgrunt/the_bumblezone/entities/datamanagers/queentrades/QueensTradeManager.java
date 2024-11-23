@@ -304,7 +304,7 @@ public class QueensTradeManager extends SimpleJsonResourceReloadListener {
                         Bumblezone.LOGGER.error("Trade result entry is set to required but " + rawTradeOutputEntry + " itemstack entry does not exist.");
                     }
                 }
-                else rawTradeOutputEntry.itemstack().ifPresent(itemHolder -> tradeResultEntries.add(new TradeResultEntry(Optional.empty(), Arrays.asList(itemHolder), rawTradeOutputEntry.count(), rawTradeOutputEntry.xpReward(), rawTradeOutputEntry.weight)));
+                else rawTradeOutputEntry.itemstack().ifPresent(itemHolder -> tradeResultEntries.add(new TradeResultEntry(Optional.empty(), Arrays.asList(itemHolder), itemHolder.getCount(), rawTradeOutputEntry.xpReward(), rawTradeOutputEntry.weight)));
             }
         }
 

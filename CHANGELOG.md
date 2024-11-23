@@ -1,3 +1,9 @@
+### **(V.7.7.9 Changes) (1.21.1 Minecraft)**
+
+#### Entities:
+Fixed Bee Queen trades not giving correct amount of rewards.
+
+
 ### **(V.7.7.8 Changes) (1.21.1 Minecraft)**
 
 #### Items:

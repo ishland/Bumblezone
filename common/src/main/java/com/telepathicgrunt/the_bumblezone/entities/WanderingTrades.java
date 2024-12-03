@@ -13,7 +13,7 @@ public class WanderingTrades {
             return;
         }
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_FLIGHT_OF_THE_BUMBLEBEE_RIMSKY_KORSAKOV.get(),
                 20,
@@ -23,7 +23,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_HONEY_BEE_RAT_FACED_BOY.get(),
                 20,
@@ -33,7 +33,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_LA_BEE_DA_LOCA.get(),
                 20,
@@ -43,7 +43,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_BEE_LAXING_WITH_THE_HOM_BEES.get(),
                 20,
@@ -53,7 +53,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_BEE_WARE_OF_THE_TEMPLE.get(),
                 20,
@@ -63,7 +63,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_KNOWING_RENREN.get(),
                 20,
@@ -73,7 +73,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_RADIANCE_RENREN.get(),
                 20,
@@ -83,7 +83,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_LIFE_RENREN.get(),
                 20,
@@ -93,7 +93,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_A_LAST_FIRST_LAST.get(),
                 20,
@@ -103,7 +103,7 @@ public class WanderingTrades {
                 0.5F
         ));
 
-        event.addRareTrade(new GeneralUtils.BasicItemTrade(
+        event.addRareTrade(new BasicItemTrade(
                 Items.EMERALD,
                 BzItems.MUSIC_DISC_DROWNING_IN_DESPAIR.get(),
                 20,

@@ -445,12 +445,6 @@ public class GeneralUtils {
 
     //////////////////////////////////////////////
 
-    public static boolean isBlockAllowedForSugarWaterWaterlogging(BlockState blockState) {
-        return blockState.is(BzTags.WATERLOGGABLE_BLOCKS_WHEN_PLACED_IN_FLUID) && !blockState.is(BzTags.FORCED_DISALLOW_WATERLOGGING_BLOCKS_WHEN_PLACED_IN_FLUID);
-    }
-
-    //////////////////////////////////////////////
-
     public static boolean isPermissionAllowedAtSpot(Level level, Entity entity, BlockPos pos, boolean placingBlock) {
         if (entity instanceof Player player && !player.mayInteract(level, pos)) {
             return false;

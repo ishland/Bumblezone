@@ -209,6 +209,10 @@ public abstract class SugarWaterFluid extends BzFluid {
         }
     }
 
+    public static boolean isBlockAllowedForSugarWaterWaterlogging(BlockState blockState) {
+        return blockState.is(BzTags.WATERLOGGABLE_BLOCKS_WHEN_PLACED_IN_FLUID) && !blockState.is(BzTags.FORCED_DISALLOW_WATERLOGGING_BLOCKS_WHEN_PLACED_IN_FLUID);
+    }
+
     public static class Flowing extends SugarWaterFluid {
         public Flowing(FluidData properties) {
             super(properties, false);

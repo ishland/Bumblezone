@@ -3,6 +3,7 @@ package com.telepathicgrunt.the_bumblezone.mixin.blocks;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.telepathicgrunt.the_bumblezone.fluids.SugarWaterFluid;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
 import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
@@ -22,7 +23,7 @@ public class BigDripleafBlockMixin {
             at = @At(value = "RETURN"),
             require = 0)
     private static boolean bumblezone$allowPlacingIntoSugarWater(boolean canReplace, BlockState blockState) {
-        if(!canReplace && blockState.is(BzFluids.SUGAR_WATER_BLOCK.get()) && GeneralUtils.isBlockAllowedForSugarWaterWaterlogging(Blocks.BIG_DRIPLEAF.defaultBlockState())) {
+        if(!canReplace && blockState.is(BzFluids.SUGAR_WATER_BLOCK.get()) && SugarWaterFluid.isBlockAllowedForSugarWaterWaterlogging(Blocks.BIG_DRIPLEAF.defaultBlockState())) {
             return true;
         }
         return canReplace;
@@ -32,7 +33,7 @@ public class BigDripleafBlockMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/material/FluidState;isSourceOfType(Lnet/minecraft/world/level/material/Fluid;)Z"),
             require = 0)
     private static boolean bumblezone$waterlogWhenPlacedIntoSugarWater(boolean isWater, LevelAccessor levelAccessor, BlockPos blockPos, FluidState fluidState) {
-        if(fluidState.is(BzTags.SUGAR_WATER_FLUID) && GeneralUtils.isBlockAllowedForSugarWaterWaterlogging(Blocks.BIG_DRIPLEAF.defaultBlockState())) {
+        if(fluidState.is(BzTags.SUGAR_WATER_FLUID) && SugarWaterFluid.isBlockAllowedForSugarWaterWaterlogging(Blocks.BIG_DRIPLEAF.defaultBlockState())) {
             return true;
         }
         return isWater;

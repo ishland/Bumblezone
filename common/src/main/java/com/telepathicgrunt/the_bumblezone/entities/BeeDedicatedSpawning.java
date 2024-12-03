@@ -1,5 +1,6 @@
 package com.telepathicgrunt.the_bumblezone.entities;
 
+import com.telepathicgrunt.the_bumblezone.Bumblezone;
 import com.telepathicgrunt.the_bumblezone.configs.BzGeneralConfigs;
 import com.telepathicgrunt.the_bumblezone.modinit.BzEntities;
 import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
@@ -9,20 +10,72 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public final class BeeDedicatedSpawning {
     private BeeDedicatedSpawning() {}
 
+    private static int ACTIVE_ENTITIES = 0;
+    private static final Set<Bee> BEE_SET = new HashSet<>();
+
+    public static void updateEntityCount(ServerLevel world) {
+        BEE_SET.clear();
+        int counter = 0;
+        for (Entity entity : world.getAllEntities()) {
+            if (entity.isAlive() && entity instanceof LivingEntity) {
+                counter++;
+            }
+
+            if(entity instanceof Bee) {
+                BEE_SET.add((Bee)entity);
+            }
+        }
+
+        ACTIVE_ENTITIES = counter;
+        BEE_SET.removeIf(bee ->
+                bee.isPersistenceRequired()
+                        || bee.hasHive()
+                        || bee.hasCustomName()
+                        || bee.isLeashed()
+                        || bee.isVehicle()
+                        || bee.isNoAi());
+    }
+
+    public static int getNearbyActiveEntitiesInDimension(ServerLevel level, BlockPos position) {
+        if (level.dimension().location().equals(Bumblezone.MOD_DIMENSION_ID)) {
+            return ACTIVE_ENTITIES;
+        }
+        else {
+            return level.getEntitiesOfClass(
+                    Bee.class,
+                    new AABB(
+                            Vec3.atLowerCornerOf(position.offset(-16, -16,-16)),
+                            Vec3.atLowerCornerOf(position.offset(16, 16,16))
+                    )
+            ).size();
+        }
+    }
+
+    public static void adjustEntityCountInBz(int adjust) {
+        ACTIVE_ENTITIES += adjust;
+    }
+
+    public static Set<Bee> getAllWildBees() {
+        return BEE_SET;
+    }
+
     public static void specialSpawnBees(ServerLevel world) {
         int despawnDistance = 80;
         int entityCountChange = 0;
-        Set<Bee> allWildBees = GeneralUtils.getAllWildBees();
+        Set<Bee> allWildBees = getAllWildBees();
         List<ServerPlayer> serverPlayers = world.players();
 
         // Remove all wild bees too far from a player.
@@ -83,6 +136,6 @@ public final class BeeDedicatedSpawning {
             }
         }
 
-        GeneralUtils.adjustEntityCountInBz(entityCountChange);
+        adjustEntityCountInBz(entityCountChange);
     }
 }

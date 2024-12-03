@@ -4,6 +4,7 @@ import com.telepathicgrunt.the_bumblezone.blocks.HoneycombBrood;
 import com.telepathicgrunt.the_bumblezone.configs.BzBeeAggressionConfigs;
 import com.telepathicgrunt.the_bumblezone.configs.BzGeneralConfigs;
 import com.telepathicgrunt.the_bumblezone.entities.BeeAggression;
+import com.telepathicgrunt.the_bumblezone.entities.BeeDedicatedSpawning;
 import com.telepathicgrunt.the_bumblezone.events.entity.BzEntityDeathEvent;
 import com.telepathicgrunt.the_bumblezone.modinit.BzEffects;
 import com.telepathicgrunt.the_bumblezone.modinit.BzPOI;
@@ -93,7 +94,7 @@ public class WrathOfTheHiveEffect extends MobEffect {
             unBEElievablyHighAggression(world, entity);
 
             if(world instanceof ServerLevel serverLevel &&
-                GeneralUtils.getNearbyActiveEntitiesInDimension(serverLevel, entity.blockPosition()) < BzGeneralConfigs.broodBlocksBeeSpawnCapacity * 3.0f)
+                BeeDedicatedSpawning.getNearbyActiveEntitiesInDimension(serverLevel, entity.blockPosition()) < BzGeneralConfigs.broodBlocksBeeSpawnCapacity * 3.0f)
             {
                 // Spawn bees when high wrath effect.
                 // Must be very low as this method is fired every tick for status effects.

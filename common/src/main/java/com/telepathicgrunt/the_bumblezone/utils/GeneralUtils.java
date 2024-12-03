@@ -95,55 +95,6 @@ import static java.util.Objects.requireNonNull;
 
 public class GeneralUtils {
 
-    private static int ACTIVE_ENTITIES = 0;
-    private static final Set<Bee> BEE_SET = new HashSet<>();
-
-    public static void updateEntityCount(ServerLevel world) {
-        BEE_SET.clear();
-        int counter = 0;
-        for (Entity entity : world.getAllEntities()) {
-            if (entity.isAlive() && entity instanceof LivingEntity) {
-                counter++;
-            }
-
-            if(entity instanceof Bee) {
-                BEE_SET.add((Bee)entity);
-            }
-        }
-
-        ACTIVE_ENTITIES = counter;
-        BEE_SET.removeIf(bee ->
-                bee.isPersistenceRequired()
-                || bee.hasHive()
-                || bee.hasCustomName()
-                || bee.isLeashed()
-                || bee.isVehicle()
-                || bee.isNoAi());
-    }
-
-    public static int getNearbyActiveEntitiesInDimension(ServerLevel level, BlockPos position) {
-        if (level.dimension().location().equals(Bumblezone.MOD_DIMENSION_ID)) {
-            return ACTIVE_ENTITIES;
-        }
-        else {
-            return level.getEntitiesOfClass(
-                Bee.class,
-                new AABB(
-                    Vec3.atLowerCornerOf(position.offset(-16, -16,-16)),
-                    Vec3.atLowerCornerOf(position.offset(16, 16,16))
-                )
-            ).size();
-        }
-    }
-
-    public static void adjustEntityCountInBz(int adjust) {
-        ACTIVE_ENTITIES += adjust;
-    }
-
-    public static Set<Bee> getAllWildBees() {
-        return BEE_SET;
-    }
-
     /////////////////////////////
 
     // Weighted Random from: https://stackoverflow.com/a/6737362

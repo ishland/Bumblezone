@@ -43,7 +43,7 @@ public abstract class ServerWorldMixin extends Level {
 			if(bumblezone$counter % bumblezone$updateInterval == 0){
 				bumblezone$counter = 0;
 				ServerLevel serverLevel = (ServerLevel) (Object) this;
-				GeneralUtils.updateEntityCount(serverLevel);
+				BeeDedicatedSpawning.updateEntityCount(serverLevel);
 				if(BzGeneralConfigs.specialBeeSpawning && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
 					BeeDedicatedSpawning.specialSpawnBees(serverLevel);
 				}

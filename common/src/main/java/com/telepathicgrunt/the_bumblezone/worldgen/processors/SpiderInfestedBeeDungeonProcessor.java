@@ -8,11 +8,15 @@ import com.telepathicgrunt.the_bumblezone.modcompat.ModCompat;
 import com.telepathicgrunt.the_bumblezone.modinit.BzBlocks;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
 import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +26,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+
+import java.util.Optional;
 
 /**
  * POOL ENTRY MUST BE USING legacy_single_pool_element OR ELSE THE STRUCTURE BLOCK IS REMOVED BEFORE THIS PROCESSOR RUNS.
@@ -64,9 +70,12 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
                             blockState = BzBlocks.HONEY_CRYSTAL.get().defaultBlockState();
                         }
                         else if (random.nextFloat() < 0.25f) {
-                            blockState = GeneralUtils.VANILLA_CANDLES.get(random.nextInt(GeneralUtils.VANILLA_CANDLES.size()));
-                            blockState = blockState.setValue(CandleBlock.CANDLES, random.nextInt(4) + 1);
-                            blockState = blockState.setValue(CandleBlock.LIT, false);
+                            Optional<HolderSet.Named<Block>> optionalBlocks = BuiltInRegistries.BLOCK.getTag(BzTags.SPIDER_INFESTED_BEE_DUNGEON_POSSIBLE_CANDLES);
+                            if (optionalBlocks.isPresent()) {
+                                blockState = optionalBlocks.get().get(random.nextInt(optionalBlocks.get().size())).value().defaultBlockState();
+                                blockState = blockState.setValue(CandleBlock.CANDLES, random.nextInt(4) + 1);
+                                blockState = blockState.setValue(CandleBlock.LIT, false);
+                            }
                         }
                         else if (random.nextFloat() < 0.05f) {
                             blockState = Blocks.COBWEB.defaultBlockState();
@@ -91,9 +100,12 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
                             blockState = BzBlocks.HONEY_CRYSTAL.get().defaultBlockState();
                         }
                         else if (random.nextFloat() < 0.2f) {
-                            blockState = GeneralUtils.VANILLA_CANDLES.get(random.nextInt(GeneralUtils.VANILLA_CANDLES.size()));
-                            blockState = blockState.setValue(CandleBlock.CANDLES, random.nextInt(random.nextInt(4) + 1) + 1);
-                            blockState = blockState.setValue(CandleBlock.LIT, false);
+                            Optional<HolderSet.Named<Block>> optionalBlocks = BuiltInRegistries.BLOCK.getTag(BzTags.SPIDER_INFESTED_BEE_DUNGEON_POSSIBLE_CANDLES);
+                            if (optionalBlocks.isPresent()) {
+                                blockState = optionalBlocks.get().get(random.nextInt(optionalBlocks.get().size())).value().defaultBlockState();
+                                blockState = blockState.setValue(CandleBlock.CANDLES, random.nextInt(random.nextInt(4) + 1) + 1);
+                                blockState = blockState.setValue(CandleBlock.LIT, false);
+                            }
                         }
                         else if (random.nextFloat() < 0.07f) {
                             blockState = Blocks.COBWEB.defaultBlockState();

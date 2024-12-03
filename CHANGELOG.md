@@ -1,3 +1,11 @@
+### **(V.7.7.10 Changes) (1.21.1 Minecraft)**
+
+#### Features:
+Unhardcoded the possible candles that can spawn in Bee Dungeon and Spider Infested Bee Dungeon. They are now controlled by these two block tags:
+ `the_bumblezone:bee_dungeon/possible_candles`
+ `the_bumblezone:spider_infested_bee_dungeon/possible_candles`
+
+
 ### **(V.7.7.9 Changes) (1.21.1 Minecraft)**
 
 #### Entities:

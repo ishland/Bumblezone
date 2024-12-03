@@ -39,6 +39,8 @@ public class BzTags {
     public static final TagKey<Block> HANGING_GARDEN_FORCED_DISALLOWED_FLOWERS_BLOCKS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "hanging_garden/forced_disallowed_flowers"));
     public static final TagKey<Block> HANGING_GARDEN_ALLOWED_TALL_FLOWERS_BLOCKS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "hanging_garden/allowed_tall_flowers"));
     public static final TagKey<Block> HANGING_GARDEN_FORCED_DISALLOWED_TALL_FLOWERS_BLOCKS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "hanging_garden/forced_disallowed_tall_flowers"));
+    public static final TagKey<Block> BEE_DUNGEON_POSSIBLE_CANDLES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "bee_dungeon/possible_candles"));
+    public static final TagKey<Block> SPIDER_INFESTED_BEE_DUNGEON_POSSIBLE_CANDLES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "spider_infested_bee_dungeon/possible_candles"));
     public static final TagKey<Block> CANDLES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "candles"));
     public static final TagKey<Block> CANDLE_WICKS = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "candle_wicks"));
     public static final TagKey<Block> CANDLE_BASES = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Bumblezone.MODID, "candle_bases"));

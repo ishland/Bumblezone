@@ -157,28 +157,6 @@ public class GeneralUtils {
         }
     }
 
-    ///////////////////////
-
-    public static final List<BlockState> VANILLA_CANDLES = ImmutableList.of(
-            Blocks.CANDLE.defaultBlockState(),
-            Blocks.CYAN_CANDLE.defaultBlockState(),
-            Blocks.BLACK_CANDLE.defaultBlockState(),
-            Blocks.BLUE_CANDLE.defaultBlockState(),
-            Blocks.BROWN_CANDLE.defaultBlockState(),
-            Blocks.GRAY_CANDLE.defaultBlockState(),
-            Blocks.GREEN_CANDLE.defaultBlockState(),
-            Blocks.LIGHT_BLUE_CANDLE.defaultBlockState(),
-            Blocks.LIGHT_GRAY_CANDLE.defaultBlockState(),
-            Blocks.LIME_CANDLE.defaultBlockState(),
-            Blocks.MAGENTA_CANDLE.defaultBlockState(),
-            Blocks.ORANGE_CANDLE.defaultBlockState(),
-            Blocks.PINK_CANDLE.defaultBlockState(),
-            Blocks.PURPLE_CANDLE.defaultBlockState(),
-            Blocks.RED_CANDLE.defaultBlockState(),
-            Blocks.WHITE_CANDLE.defaultBlockState(),
-            Blocks.YELLOW_CANDLE.defaultBlockState()
-    );
-
     //////////////////////////////////////////////
 
     /**

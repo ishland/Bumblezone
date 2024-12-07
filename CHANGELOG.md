@@ -1,3 +1,9 @@
+### **(V.7.5.6 Changes) (1.20.1 Minecraft)**
+
+#### Mod Compat:
+Added icons for Bumblezone biomes when viewed with Emi Ores.
+
+
 ### **(V.7.5.5 Changes) (1.20.1 Minecraft)**
 
 #### Blocks:

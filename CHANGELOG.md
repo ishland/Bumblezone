@@ -5,6 +5,9 @@ Unhardcoded the possible candles that can spawn in Bee Dungeon and Spider Infest
  `the_bumblezone:bee_dungeon/possible_candles`
  `the_bumblezone:spider_infested_bee_dungeon/possible_candles`
 
+#### Mod Compat:
+Added icons for Bumblezone biomes when viewed with Emi Ores.
+
 
 ### **(V.7.7.9 Changes) (1.21.1 Minecraft)**
 

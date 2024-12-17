@@ -1,5 +1,14 @@
 ### **(V.7.5.6 Changes) (1.20.1 Minecraft)**
 
+#### Blocks:
+Improved canSurvive check with StickyHoneyResidue. Makes worldgen placing of this block a bit faster.
+
+#### Features:
+Turned off neighbor shape update when placing giant honeycomb holes in the walls during worldgen as it is not needed to be ran.
+ Improves worldgen speed a bit.
+
+Improved worldgen time a bit for caves in Bumblezone
+
 #### Mod Compat:
 Added icons for Bumblezone biomes when viewed with Emi Ores.
 

@@ -52,7 +52,7 @@ public class HoneycombHole extends Feature<NbtFeatureConfig> {
         // offset the feature's position
         BlockPos position = context.origin().above(context.config().structureYOffset);
 
-        StructurePlaceSettings structurePlacementData = (new StructurePlaceSettings()).setRotation(Rotation.NONE).setRotationPivot(halfLengths).setIgnoreEntities(false);
+        StructurePlaceSettings structurePlacementData = (new StructurePlaceSettings()).setRotation(Rotation.NONE).setRotationPivot(halfLengths).setIgnoreEntities(false).setKnownShape(true);
         Registry<StructureProcessorList> processorListRegistry = context.level().getLevel().getServer().registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
         StructureProcessorList emptyProcessor = processorListRegistry.get(EMPTY);
 

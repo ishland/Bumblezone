@@ -3,6 +3,8 @@
 #### Mod Compat:
 Added icons for Bumblezone biomes when viewed with Emi Ores.
 
+Fixed code to properly swap bees in structures rarely with modded bees.
+
 
 ### **(V.7.5.5 Changes) (1.20.1 Minecraft)**
 

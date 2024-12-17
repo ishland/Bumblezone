@@ -1,9 +1,17 @@
 ### **(V.7.7.10 Changes) (1.21.1 Minecraft)**
 
+#### Blocks:
+Improved canSurvive check with StickyHoneyResidue. Makes worldgen placing of this block a bit faster.
+
 #### Features:
 Unhardcoded the possible candles that can spawn in Bee Dungeon and Spider Infested Bee Dungeon. They are now controlled by these two block tags:
  `the_bumblezone:bee_dungeon/possible_candles`
  `the_bumblezone:spider_infested_bee_dungeon/possible_candles`
+
+Turned off neighbor shape update when placing giant honeycomb holes in the walls during worldgen as it is not needed to be ran.
+ Improves worldgen speed a bit.
+
+Improved worldgen time a bit for caves in Bumblezone
 
 #### Mod Compat:
 Added icons for Bumblezone biomes when viewed with Emi Ores.

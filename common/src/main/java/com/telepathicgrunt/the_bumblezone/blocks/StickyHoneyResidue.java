@@ -226,7 +226,22 @@ public class StickyHoneyResidue extends Block {
      */
     @Override
     public boolean canSurvive(BlockState blockstate, LevelReader world, BlockPos pos) {
-        return hasAtleastOneAttachment(this.setAttachments(blockstate, world, pos));
+        return canHaveAtleastOneAttachment(blockstate, world, pos);
+    }
+
+    /**
+     * Returns true if the block could get at least one face.
+     */
+    public static boolean canHaveAtleastOneAttachment(BlockState blockstate, LevelReader world, BlockPos pos) {
+        for (Direction direction : Direction.values()) {
+            BooleanProperty booleanproperty = FACING_TO_PROPERTY_MAP.get(direction);
+            if (blockstate.getValue(booleanproperty)) {
+                if (isAcceptableNeighbour(world, pos.relative(direction), direction)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

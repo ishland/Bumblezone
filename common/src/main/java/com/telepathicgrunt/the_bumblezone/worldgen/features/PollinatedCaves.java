@@ -71,15 +71,25 @@ public class PollinatedCaves extends Feature<NoneFeatureConfiguration> {
         double noise2;
         double finalNoise;
 
+        int orgX = context.origin().getX();
+        int orgY = context.origin().getY();
+        int orgZ = context.origin().getZ();
+
         UnsafeBulkSectionAccess bulkSectionAccess = new UnsafeBulkSectionAccess(context.level());
         for (int y = 15; y < context.chunkGenerator().getGenDepth() - 14; y++) {
             if (y > disallowedBottomRange && y < disallowedTopRange) {
                 continue;
             }
 
+            mutableBlockPos.set(orgX, orgY, orgZ).move(0, y, 0);
+            if (bulkSectionAccess.getSection(mutableBlockPos).hasOnlyAir()) {
+                y += 16 - (y % 16);
+                continue;
+            }
+
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
-                    mutableBlockPos.set(context.origin()).move(x, y, z);
+                    mutableBlockPos.set(orgX, orgY, orgZ).move(x, y, z);
 
                     if (bulkSectionAccess.getSection(mutableBlockPos).hasOnlyAir()) {
                         x = 16;
@@ -92,7 +102,7 @@ public class PollinatedCaves extends Feature<NoneFeatureConfiguration> {
                             mutableBlockPos.getZ() * 0.019D,
                             mutableBlockPos.getY() * 0.038D);
 
-                    if (noise1 >= 0.0360555127546399D) {
+                    if (noise1 >= 0.0360555127546399D || noise1 <= -0.0360555127546399D) {
                         if (noise1 >= 0.6) {
                             z += 6;
                         }

@@ -188,22 +188,22 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
                 continue;
             }
 
+            mutableBlockPos.set(orgX, orgY, orgZ).move(0, y, 0);
+            if (bulkSectionAccess.getSection(mutableBlockPos).hasOnlyAir()) {
+                y += 16 - (y % 16);
+                continue;
+            }
+
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     mutableBlockPos.set(orgX, orgY, orgZ).move(x, y, z);
-
-                    if (bulkSectionAccess.getSection(mutableBlockPos).hasOnlyAir()) {
-                        x = 16;
-                        y += 16 - (y % 16);
-                        break;
-                    }
 
                     double noise1 = noiseGen.noise3_Classic(
                             mutableBlockPos.getX() * 0.019D,
                             mutableBlockPos.getZ() * 0.019D,
                             mutableBlockPos.getY() * 0.038D);
 
-                    if (noise1 >= 0.0360555127546399D) {
+                    if (noise1 >= 0.0360555127546399D || noise1 <= -0.0360555127546399D) {
                         z = zSkipping(z, noise1);
                         continue;
                     }
@@ -251,7 +251,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
     }
 
     private static void hexagon(WorldGenLevel world, UnsafeBulkSectionAccess bulkSectionAccess, ChunkGenerator generator, BlockPos position, RandomSource random, double noise) {
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos().set(position);
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         BlockState blockState;
         int index = (int) (((noise * 0.5D) + 0.5D) * 7);
         BlockPos.MutableBlockPos tempMutable = new BlockPos.MutableBlockPos();
@@ -287,9 +287,8 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
     {
         if (blockState.canOcclude() && !blockState.canBeReplaced() && !blockState.is(BzTags.FORCE_CAVE_TO_NOT_CARVE)) {
             boolean isNextToAir = shouldCloseOff(bulkSectionAccess, blockPos, mutable);
-            if(blockPos.getY() >= generator.getSeaLevel() && isNextToAir) return;
+            if (blockPos.getY() >= generator.getSeaLevel() && isNextToAir) return;
 
-            boolean isBlockEntity = blockState.hasBlockEntity();
             if (posResult == 2) {
                 if (blockPos.getY() < generator.getSeaLevel()) {
                     if (isNextToAir) {
@@ -299,7 +298,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
                         bulkSectionAccess.setBlockState(blockPos, BzFluids.SUGAR_WATER_BLOCK.get().defaultBlockState(), false);
                     }
 
-                    if (isBlockEntity) {
+                    if (blockState.hasBlockEntity()) {
                         world.getChunk(blockPos).removeBlockEntity(blockPos);
                     }
                 }
@@ -315,7 +314,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
                             bulkSectionAccess.setBlockState(abovePos, Blocks.CAVE_AIR.defaultBlockState(), false);
                         }
 
-                        if (isBlockEntity) {
+                        if (blockState.hasBlockEntity()) {
                             world.getChunk(blockPos).removeBlockEntity(blockPos);
                         }
                     }
@@ -329,7 +328,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
                     bulkSectionAccess.setBlockState(blockPos, BzBlocks.FILLED_POROUS_HONEYCOMB.get().defaultBlockState(), false);
                 }
 
-                if (isBlockEntity) {
+                if (blockState.hasBlockEntity()) {
                     world.getChunk(blockPos).removeBlockEntity(blockPos);
                 }
             }

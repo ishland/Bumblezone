@@ -33,6 +33,7 @@
     "entity.PlayerMixin",
     "entity.ProjectileMixin",
     "entity.ServerPlayerMixin",
+    "entity.StructureTemplateEntitySpawnMixin",
     "entity.WalkNodeEvaluatorMixin",
     "fabricapi.BiomeModificationContextImplMixin",
     "item.BucketItemAccessor",

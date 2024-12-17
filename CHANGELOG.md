@@ -8,6 +8,8 @@ Unhardcoded the possible candles that can spawn in Bee Dungeon and Spider Infest
 #### Mod Compat:
 Added icons for Bumblezone biomes when viewed with Emi Ores.
 
+Fixed code to properly swap bees in structures rarely with modded bees.
+
 
 ### **(V.7.7.9 Changes) (1.21.1 Minecraft)**
 

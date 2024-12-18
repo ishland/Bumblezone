@@ -13,6 +13,9 @@ Turned off neighbor shape update when placing giant honeycomb holes in the walls
 
 Improved worldgen time a bit for caves in Bumblezone
 
+#### Dimension:
+Tried to cleanup and adjust Surface Rules to make worldgen a bit faster.
+
 #### Mod Compat:
 Added icons for Bumblezone biomes when viewed with Emi Ores.
 

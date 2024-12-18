@@ -256,7 +256,13 @@ public class OptimizedJigsawManager {
             MutableObject<BoxOctree> parentOctree = new MutableObject<>();
 
             // Get list of all jigsaw blocks in this piece
-            List<StructureTemplate.StructureBlockInfo> pieceJigsawBlocks = pieceBlueprint.getShuffledJigsawBlocks(this.structureTemplateManager, piecePos, pieceRotation, this.random);
+            List<StructureTemplate.StructureBlockInfo> pieceJigsawBlocks;
+            if (pieceBlueprint instanceof SinglePoolElement singlePoolElement) {
+                pieceJigsawBlocks = GeneralUtils.getShuffledJigsawBlocksWithoutPriority(singlePoolElement, this.structureTemplateManager, piecePos, pieceRotation, this.random);
+            }
+            else {
+                pieceJigsawBlocks = pieceBlueprint.getShuffledJigsawBlocks(this.structureTemplateManager, piecePos, pieceRotation, this.random);
+            }
 
             for (StructureTemplate.StructureBlockInfo jigsawBlock : pieceJigsawBlocks) {
                 // Gather jigsaw block information
@@ -348,7 +354,13 @@ public class OptimizedJigsawManager {
 
                 // Try different rotations to see which sides of the piece are fit to be the receiving end
                 for (Rotation rotation : Rotation.getShuffled(this.random)) {
-                    List<StructureTemplate.StructureBlockInfo> candidateJigsawBlocks = candidatePiece.getShuffledJigsawBlocks(this.structureTemplateManager, BlockPos.ZERO, rotation, this.random);
+                    List<StructureTemplate.StructureBlockInfo> candidateJigsawBlocks;
+                    if (candidatePiece instanceof SinglePoolElement singlePoolElement) {
+                        candidateJigsawBlocks = GeneralUtils.getShuffledJigsawBlocksWithoutPriority(singlePoolElement, this.structureTemplateManager, BlockPos.ZERO, rotation, this.random);
+                    }
+                    else {
+                        candidateJigsawBlocks = candidatePiece.getShuffledJigsawBlocks(this.structureTemplateManager, BlockPos.ZERO, rotation, this.random);
+                    }
                     BoundingBox tempCandidateBoundingBox = candidatePiece.getBoundingBox(this.structureTemplateManager, BlockPos.ZERO, rotation);
 
                     // Some sort of logic for setting the candidateHeightAdjustments var if doBoundaryAdjustments.

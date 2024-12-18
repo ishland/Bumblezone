@@ -13,6 +13,9 @@ Turned off neighbor shape update when placing giant honeycomb holes in the walls
 
 Improved worldgen time a bit for caves in Bumblezone
 
+#### Structures:
+Stopped checking "selection_priority" in Jigsaw Blocks for Bumblezone structures since Bumblezone doesn't use it. Speeds up structure layout generation a little bit.
+
 #### Dimension:
 Tried to cleanup and adjust Surface Rules to make worldgen a bit faster.
 

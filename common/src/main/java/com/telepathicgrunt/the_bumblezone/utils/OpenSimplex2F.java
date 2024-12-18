@@ -176,6 +176,8 @@ public class OpenSimplex2F {
 	 * than to build up the index with enough info to isolate 4 points.
 	 */
 	private double noise3_BCC(double xr, double yr, double zr) {
+		var perm = this.perm;
+		var permGrad3  = this.permGrad3;
 
 		// Get base and offsets inside cube of first lattice.
 		int xrb = fastFloor(xr), yrb = fastFloor(yr), zrb = fastFloor(zr);

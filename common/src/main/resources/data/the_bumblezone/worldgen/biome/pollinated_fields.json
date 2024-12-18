@@ -27,6 +27,7 @@
   "carvers": {},
   "features": [
     [
+      "the_bumblezone:beehive_beeswax_boundaries",
       "the_bumblezone:pollinated_surface_thin",
       "the_bumblezone:pollinated_caves"
     ],

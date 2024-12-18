@@ -1,3 +1,9 @@
+### **(V.7.5.7 Changes) (1.20.1 Minecraft)**
+
+#### Dimension:
+Replaced 2 Surface Rules with a feature and adjusted rest of Surface Rules to make worldgen faster.
+
+
 ### **(V.7.5.6 Changes) (1.20.1 Minecraft)**
 
 #### Blocks:

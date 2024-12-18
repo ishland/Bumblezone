@@ -5,6 +5,7 @@ import com.telepathicgrunt.the_bumblezone.modinit.registry.RegistryEntry;
 import com.telepathicgrunt.the_bumblezone.modinit.registry.ResourcefulRegistries;
 import com.telepathicgrunt.the_bumblezone.modinit.registry.ResourcefulRegistry;
 import com.telepathicgrunt.the_bumblezone.worldgen.features.BeeDungeon;
+import com.telepathicgrunt.the_bumblezone.worldgen.features.BeehiveBeewaxBoundaries;
 import com.telepathicgrunt.the_bumblezone.worldgen.features.BlockEntityCombOre;
 import com.telepathicgrunt.the_bumblezone.worldgen.features.CaveSugarWaterfall;
 import com.telepathicgrunt.the_bumblezone.worldgen.features.FloralFillWithRootmin;
@@ -54,6 +55,7 @@ public class BzFeatures {
     public static final RegistryEntry<Feature<ItemFrameConfig>> ITEM_FRAME_WITH_RANDOM_ITEM = FEATURES.register("item_frame_with_random_item", () -> new ItemFrameWithRandomItem(ItemFrameConfig.CODEC));
     public static final RegistryEntry<Feature<FloralFillWithRootminConfig>> FLORAL_FILL_WITH_ROOTMIN = FEATURES.register("floral_fill_with_rootmin", () -> new FloralFillWithRootmin(FloralFillWithRootminConfig.CODEC));
     public static final RegistryEntry<Feature<TwoToneSpikeFeatureConfig>> TWO_TONE_SPIKE_FEATURE = FEATURES.register("two_tone_spike_feature", () -> new TwoToneSpikeFeature(TwoToneSpikeFeatureConfig.CODEC));
+    public static final RegistryEntry<Feature<NoneFeatureConfiguration>> BEEHIVE_BEESWAX_BOUNDARIES = FEATURES.register("beehive_beeswax_boundaries", () -> new BeehiveBeewaxBoundaries(NoneFeatureConfiguration.CODEC));
 
     public static final RegistryEntry<Feature<NbtOreConfiguration>> BLOCKENTITY_COMBS_FEATURE = FEATURES.register("blockentity_combs", () -> new BlockEntityCombOre(NbtOreConfiguration.CODEC));
 }

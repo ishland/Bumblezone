@@ -3,6 +3,7 @@ package com.telepathicgrunt.the_bumblezone.worldgen.processors;
 import com.mojang.serialization.MapCodec;
 import com.telepathicgrunt.the_bumblezone.modinit.BzBlocks;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -25,23 +26,28 @@ public class CloseOffOutsideFluidsProcessor extends StructureProcessor {
     private CloseOffOutsideFluidsProcessor() { }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
-        ChunkAccess cachedChunk = worldView.getChunk(structureBlockInfoWorld.pos());
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
         BlockPos worldPos = structureBlockInfoWorld.pos();
+        if (structureBlockInfoWorld.state().isAir()) {
+            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+                return structureBlockInfoWorld;
+            }
 
-        if(structureBlockInfoWorld.state().isAir()) {
+            ChunkAccess cachedChunk = levelReader.getChunk(structureBlockInfoWorld.pos());
             BlockPos.MutableBlockPos sidePos = new BlockPos.MutableBlockPos();
-            for(Direction direction : Direction.values()) {
-                if(Direction.DOWN == direction) continue;
+
+            for (Direction direction : Direction.values()) {
+                if (Direction.DOWN == direction) continue;
 
                 sidePos.set(worldPos).move(direction);
-                if(cachedChunk.getPos().x != sidePos.getX() >> 4 || cachedChunk.getPos().z != sidePos.getZ() >> 4)
-                    cachedChunk = worldView.getChunk(sidePos);
+                if (cachedChunk.getPos().x != sidePos.getX() >> 4 || cachedChunk.getPos().z != sidePos.getZ() >> 4) {
+                    cachedChunk = levelReader.getChunk(sidePos);
+                }
 
                 BlockState neighborState = cachedChunk.getBlockState(sidePos);
-                if(neighborState.getFluidState().isSource()) {
+                if (neighborState.getFluidState().isSource()) {
 
-                    if(!worldView.getBlockState(sidePos.below()).getFluidState().isEmpty()) {
+                    if (!levelReader.getBlockState(sidePos.below()).getFluidState().isEmpty()) {
 
                         // Copy what vanilla ores do.
                         // This bypasses the PaletteContainer's lock as it was throwing `Accessing PalettedContainer from multiple threads` crash
@@ -55,8 +61,8 @@ public class CloseOffOutsideFluidsProcessor extends StructureProcessor {
                                 BzBlocks.FILLED_POROUS_HONEYCOMB.get().defaultBlockState(),
                                 false);
                     }
-                    else if(!worldView.isOutsideBuildHeight(sidePos)) {
-                        ((LevelAccessor)worldView).scheduleTick(sidePos, neighborState.getFluidState().getType(), 0);
+                    else if(!levelReader.isOutsideBuildHeight(sidePos)) {
+                        ((LevelAccessor)levelReader).scheduleTick(sidePos, neighborState.getFluidState().getType(), 0);
                     }
                 }
             }

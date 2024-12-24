@@ -1,3 +1,9 @@
+### **(V.7.7.12 Changes) (1.21.1 Minecraft)**
+
+#### Structures:
+Fixed an issue where processors in Structures were running their logic too often in side chunks they didn't need to run in.
+
+
 ### **(V.7.7.11 Changes) (1.21.1 Minecraft)**
 
 #### Dimension:

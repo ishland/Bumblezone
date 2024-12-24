@@ -9,6 +9,7 @@ import com.telepathicgrunt.the_bumblezone.blocks.PileOfPollen;
 import com.telepathicgrunt.the_bumblezone.modinit.BzBlocks;
 import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
@@ -33,13 +34,17 @@ public class HoneycombHoleProcessor extends StructureProcessor {
     private HoneycombHoleProcessor(int floodLevel) { this.floodLevel = floodLevel; }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
         BlockState placingState = structureBlockInfoWorld.state();
         BlockPos worldPos = structureBlockInfoWorld.pos();
         RandomSource random = new WorldgenRandom(new LegacyRandomSource(0));
         random.setSeed(worldPos.asLong() * worldPos.getY());
 
-        ChunkAccess chunk = worldView.getChunk(structureBlockInfoWorld.pos());
+        ChunkAccess chunk = levelReader.getChunk(structureBlockInfoWorld.pos());
         BlockState checkedState = chunk.getBlockState(structureBlockInfoWorld.pos());
 
         // does world checks for cave and pollen powder

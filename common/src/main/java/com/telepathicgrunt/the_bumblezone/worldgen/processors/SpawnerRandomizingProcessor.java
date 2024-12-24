@@ -14,9 +14,11 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -46,8 +48,12 @@ public class SpawnerRandomizingProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
         if (structureBlockInfoWorld.state().getBlock() instanceof SpawnerBlock) {
+            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+                return structureBlockInfoWorld;
+            }
+
             BlockPos worldPos = structureBlockInfoWorld.pos();
             RandomSource randomSource = structurePlacementData.getRandom(worldPos);
 
@@ -55,7 +61,7 @@ public class SpawnerRandomizingProcessor extends StructureProcessor {
             if (overrideMobsToPickFrom.isPresent() && overrideMobsToPickFrom.get().size() > 0 && randomSource.nextFloat() < chanceToOverrideWithTaggedMobs) {
                 newSpawnerData = SetMobSpawnerEntity(overrideMobsToPickFrom.get().get(randomSource.nextInt(overrideMobsToPickFrom.get().size())).value(), structureBlockInfoWorld.nbt());
             }
-            else if (mainSpawnerData.size() > 0) {
+            else if (!mainSpawnerData.isEmpty()) {
                 newSpawnerData = SetMobSpawnerEntity(GeneralUtils.getRandomEntry(mainSpawnerData, randomSource), structureBlockInfoWorld.nbt());
             }
             else {

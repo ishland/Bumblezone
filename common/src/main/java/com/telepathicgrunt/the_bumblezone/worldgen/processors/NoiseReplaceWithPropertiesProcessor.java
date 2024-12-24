@@ -55,24 +55,28 @@ public class NoiseReplaceWithPropertiesProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings) {
-        setSeed(worldReader instanceof WorldGenRegion ? ((WorldGenRegion) worldReader).getSeed() : 0);
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
 
-        if(infoIn2.state().getBlock() == inputBlock) {
-            BlockPos worldPos = infoIn2.pos();
+        setSeed(levelReader instanceof WorldGenRegion ? ((WorldGenRegion) levelReader).getSeed() : 0);
+
+        if (structureBlockInfoWorld.state().getBlock() == inputBlock) {
+            BlockPos worldPos = structureBlockInfoWorld.pos();
             double noiseVal = noiseGenerator.noise3_Classic(worldPos.getX() * xzScale, worldPos.getY() * yScale, worldPos.getZ() * xzScale);
 
-            if((noiseVal / 2D) + 0.5D < threshold) {
+            if ((noiseVal / 2D) + 0.5D < threshold) {
                 BlockState newBlockState = outputBlock.defaultBlockState();
-                for(Property<?> property : infoIn2.state().getProperties()) {
-                    if(newBlockState.hasProperty(property)) {
-                        newBlockState = GeneralUtils.getStateWithProperty(newBlockState, infoIn2.state(), property);
+                for (Property<?> property : structureBlockInfoWorld.state().getProperties()) {
+                    if (newBlockState.hasProperty(property)) {
+                        newBlockState = GeneralUtils.getStateWithProperty(newBlockState, structureBlockInfoWorld.state(), property);
                     }
                 }
-                return new StructureTemplate.StructureBlockInfo(infoIn2.pos(), newBlockState, infoIn2.nbt());
+                return new StructureTemplate.StructureBlockInfo(structureBlockInfoWorld.pos(), newBlockState, structureBlockInfoWorld.nbt());
             }
         }
-        return infoIn2;
+        return structureBlockInfoWorld;
     }
 
     @Override

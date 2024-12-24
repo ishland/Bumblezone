@@ -14,7 +14,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -38,7 +40,11 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
     private SpiderInfestedBeeDungeonProcessor() { }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
         BlockState blockState = structureBlockInfoWorld.state();
         BlockPos worldPos = structureBlockInfoWorld.pos();
         RandomSource random = new WorldgenRandom(new LegacyRandomSource(0));
@@ -52,7 +58,7 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
                 return structureBlockInfoWorld;
             }
             String metadata = compoundTag.getString("metadata");
-            BlockState belowBlock = worldView.getChunk(worldPos).getBlockState(worldPos);
+            BlockState belowBlock = levelReader.getChunk(worldPos).getBlockState(worldPos);
 
             //altar blocks cannot be placed on air
             if(belowBlock.isAir()) {
@@ -126,8 +132,8 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
             boolean compatSuccess = false;
 
             for (ModCompat compat : ModChecker.DUNGEON_COMB_COMPATS) {
-                if (compat.checkCombSpawn(worldPos, random, worldView, true)) {
-                    StructureTemplate.StructureBlockInfo info = compat.getHoneycomb(worldPos, random, worldView, true);
+                if (compat.checkCombSpawn(worldPos, random, levelReader, true)) {
+                    StructureTemplate.StructureBlockInfo info = compat.getHoneycomb(worldPos, random, levelReader, true);
                     if (info != null) {
                         return info;
                     }

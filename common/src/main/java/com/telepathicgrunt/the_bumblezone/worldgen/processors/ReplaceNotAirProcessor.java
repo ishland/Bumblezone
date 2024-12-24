@@ -5,8 +5,11 @@ import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,16 +38,20 @@ public class ReplaceNotAirProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
 
-        if(blocksToAlwaysReplace.isEmpty() || blocksToAlwaysReplace.contains(structureBlockInfoWorld.state().getBlock())) {
+        if (blocksToAlwaysReplace.isEmpty() || blocksToAlwaysReplace.contains(structureBlockInfoWorld.state().getBlock())) {
             BlockPos position = structureBlockInfoWorld.pos();
-            BlockState worldState = worldView.getBlockState(position);
+            BlockState worldState = levelReader.getBlockState(position);
 
             if (worldState.isAir()) {
                 return null;
             }
         }
+
         return structureBlockInfoWorld;
     }
 

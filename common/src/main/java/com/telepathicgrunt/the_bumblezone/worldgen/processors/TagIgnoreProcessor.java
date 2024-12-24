@@ -3,9 +3,12 @@ package com.telepathicgrunt.the_bumblezone.worldgen.processors;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,12 +30,16 @@ public class TagIgnoreProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         if (structureBlockInfoWorld == null) {
             return null;
         }
 
-        BlockState worldState = worldReader.getBlockState(structureBlockInfoWorld.pos());
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
+        BlockState worldState = levelReader.getBlockState(structureBlockInfoWorld.pos());
         return worldState.is(this.ignoreBlocksTag) ? null : structureBlockInfoWorld;
     }
 

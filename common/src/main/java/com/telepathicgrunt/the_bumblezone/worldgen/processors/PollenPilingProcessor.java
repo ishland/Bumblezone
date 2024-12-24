@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.blocks.PileOfPollen;
 import com.telepathicgrunt.the_bumblezone.modinit.BzBlocks;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import com.telepathicgrunt.the_bumblezone.utils.OpenSimplex2F;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,32 +48,36 @@ public class PollenPilingProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
-        setSeed(worldView instanceof WorldGenRegion ? ((WorldGenRegion) worldView).getSeed() : 0);
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
+        setSeed(levelReader instanceof WorldGenRegion ? ((WorldGenRegion) levelReader).getSeed() : 0);
         StructureTemplate.StructureBlockInfo structureBlockInfoToReturn = structureBlockInfoWorld;
         BlockState structureState = structureBlockInfoToReturn.state();
         BlockPos worldPos = structureBlockInfoToReturn.pos();
 
-
-        if(structureState.is(BzBlocks.PILE_OF_POLLEN.get())) {
-            if(!pollenReplaceSolids && !worldView.getBlockState(worldPos).isAir()) {
+        if (structureState.is(BzBlocks.PILE_OF_POLLEN.get())) {
+            if (!pollenReplaceSolids && !levelReader.getBlockState(worldPos).isAir()) {
                 return null;
             }
 
             BlockPos belowPos = worldPos.below();
-            if(belowPos.getY() <= worldView.getMinBuildHeight() || belowPos.getY() >= worldView.getMaxBuildHeight())
+            if (belowPos.getY() <= levelReader.getMinBuildHeight() || belowPos.getY() >= levelReader.getMaxBuildHeight()) {
                 return null;
+            }
             
-            ChunkAccess chunk = worldView.getChunk(belowPos);
+            ChunkAccess chunk = levelReader.getChunk(belowPos);
             BlockState belowState = chunk.getBlockState(belowPos);
-            if(!belowState.canOcclude()) {
-                ((LevelAccessor)worldView).scheduleTick(belowPos, structureState.getBlock(), 0);
+            if (!belowState.canOcclude()) {
+                ((LevelAccessor)levelReader).scheduleTick(belowPos, structureState.getBlock(), 0);
             }
 
             BlockPos.MutableBlockPos sidePos = new BlockPos.MutableBlockPos();
-            for(Direction direction : Direction.values()) {
+            for (Direction direction : Direction.values()) {
                 sidePos.set(worldPos).move(direction);
-                if(worldView.getBlockState(sidePos).getFluidState().isSource()) {
+                if (levelReader.getBlockState(sidePos).getFluidState().isSource()) {
                     return new StructureTemplate.StructureBlockInfo(worldPos, BzBlocks.FILLED_POROUS_HONEYCOMB.get().defaultBlockState(), null);
                 }
             }
@@ -83,12 +88,12 @@ public class PollenPilingProcessor extends StructureProcessor {
             structureBlockInfoToReturn = new StructureTemplate.StructureBlockInfo(worldPos, structureState.setValue(PileOfPollen.LAYERS, layerHeight), structureBlockInfoToReturn.nbt());
         }
 
-        if(!structureState.canOcclude()) {
+        if (!structureState.canOcclude()) {
             BlockPos abovePos = worldPos.above();
-            ChunkAccess chunk = worldView.getChunk(abovePos);
+            ChunkAccess chunk = levelReader.getChunk(abovePos);
             BlockState aboveState = chunk.getBlockState(abovePos);
-            if(aboveState.is(BzBlocks.PILE_OF_POLLEN.get())) {
-                ((LevelAccessor)worldView).scheduleTick(abovePos, aboveState.getBlock(), 0);
+            if (aboveState.is(BzBlocks.PILE_OF_POLLEN.get())) {
+                ((LevelAccessor)levelReader).scheduleTick(abovePos, aboveState.getBlock(), 0);
             }
         }
 

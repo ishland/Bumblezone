@@ -67,6 +67,9 @@ public class PillarProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos templateOffset, BlockPos worldOffset, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
 
         BlockState blockState = structureBlockInfoWorld.state();
         if (pillarTriggerAndReplacementBlocks.containsKey(blockState)) {

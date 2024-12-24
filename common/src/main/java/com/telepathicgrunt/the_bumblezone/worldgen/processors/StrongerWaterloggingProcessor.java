@@ -2,6 +2,7 @@ package com.telepathicgrunt.the_bumblezone.worldgen.processors;
 
 import com.mojang.serialization.Codec;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
@@ -21,20 +22,27 @@ public class StrongerWaterloggingProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
-        if(structureBlockInfoWorld.state().hasProperty(BlockStateProperties.WATERLOGGED) && !structureBlockInfoWorld.state().getValue(BlockStateProperties.WATERLOGGED)) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
+        if (structureBlockInfoWorld.state().hasProperty(BlockStateProperties.WATERLOGGED) && !structureBlockInfoWorld.state().getValue(BlockStateProperties.WATERLOGGED)) {
             ChunkAccess cachedChunk = levelReader.getChunk(structureBlockInfoWorld.pos());
             BlockPos worldPos = structureBlockInfoWorld.pos();
             BlockPos.MutableBlockPos sidePos = new BlockPos.MutableBlockPos();
 
-            for(Direction direction : Direction.values()) {
-                if(Direction.DOWN == direction) continue;
+            for (Direction direction : Direction.values()) {
+                if (Direction.DOWN == direction) {
+                    continue;
+                }
 
                 sidePos.set(worldPos).move(direction);
-                if(cachedChunk.getPos().x != sidePos.getX() >> 4 || cachedChunk.getPos().z != sidePos.getZ() >> 4)
+                if (cachedChunk.getPos().x != sidePos.getX() >> 4 || cachedChunk.getPos().z != sidePos.getZ() >> 4) {
                     cachedChunk = levelReader.getChunk(sidePos);
+                }
 
                 BlockState neighborState = cachedChunk.getBlockState(sidePos);
-                if(neighborState.getFluidState().isSource()) {
+                if (neighborState.getFluidState().isSource()) {
 
                     return new StructureTemplate.StructureBlockInfo(
                         structureBlockInfoWorld.pos(),

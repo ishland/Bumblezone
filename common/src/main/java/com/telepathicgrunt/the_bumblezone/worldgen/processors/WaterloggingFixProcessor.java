@@ -2,6 +2,7 @@ package com.telepathicgrunt.the_bumblezone.worldgen.processors;
 
 import com.mojang.serialization.Codec;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.ChunkPos;
@@ -20,21 +21,21 @@ public class WaterloggingFixProcessor extends StructureProcessor {
     private WaterloggingFixProcessor() { }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings) {
-        if(!infoIn2.state().getFluidState().isEmpty()) {
-            if(levelReader instanceof WorldGenRegion worldGenRegion && !worldGenRegion.getCenter().equals(new ChunkPos(infoIn2.pos()))) {
-                return infoIn2;
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+        if (!structureBlockInfoWorld.state().getFluidState().isEmpty()) {
+            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+                return structureBlockInfoWorld;
             }
 
-            ChunkAccess chunk = levelReader.getChunk(infoIn2.pos());
+            ChunkAccess chunk = levelReader.getChunk(structureBlockInfoWorld.pos());
             int minY = chunk.getMinBuildHeight();
             int maxY = chunk.getMaxBuildHeight();
-            int currentY = infoIn2.pos().getY();
-            if(currentY >= minY && currentY <= maxY) {
-                ((LevelAccessor) levelReader).scheduleTick(infoIn2.pos(), infoIn2.state().getBlock(), 0);
+            int currentY = structureBlockInfoWorld.pos().getY();
+            if (currentY >= minY && currentY <= maxY) {
+                ((LevelAccessor) levelReader).scheduleTick(structureBlockInfoWorld.pos(), structureBlockInfoWorld.state().getBlock(), 0);
             }
         }
-        return infoIn2;
+        return structureBlockInfoWorld;
     }
 
     @Override

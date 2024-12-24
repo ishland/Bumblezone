@@ -46,32 +46,36 @@ public class RandomReplaceWithPropertiesProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
-        if(structureBlockInfoWorld.state().getBlock() == inputBlock) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
+        if (structureBlockInfoWorld.state().getBlock() == inputBlock) {
             BlockPos worldPos = structureBlockInfoWorld.pos();
             RandomSource random = RandomSource.create();
             int offSet = settings.getProcessors().indexOf(this) + 1;
             random.setSeed(worldPos.asLong() * worldPos.asLong() * offSet);
-            if(random.nextFloat() < probability) {
-                if(outputBlock.isPresent()) {
+            if (random.nextFloat() < probability) {
+                if (outputBlock.isPresent()) {
                     BlockState newBlockState = outputBlock.get().defaultBlockState();
-                    for(Property<?> property : structureBlockInfoWorld.state().getProperties()) {
-                        if(newBlockState.hasProperty(property)) {
+                    for (Property<?> property : structureBlockInfoWorld.state().getProperties()) {
+                        if (newBlockState.hasProperty(property)) {
                             newBlockState = GeneralUtils.getStateWithProperty(newBlockState, structureBlockInfoWorld.state(), property);
                         }
                     }
                     return new StructureTemplate.StructureBlockInfo(structureBlockInfoWorld.pos(), newBlockState, structureBlockInfoWorld.nbt());
                 }
-                else if(!outputBlocks.isEmpty()) {
+                else if (!outputBlocks.isEmpty()) {
                     BlockState newBlockState = outputBlocks.get(random.nextInt(outputBlocks.size())).defaultBlockState();
-                    for(Property<?> property : structureBlockInfoWorld.state().getProperties()) {
-                        if(newBlockState.hasProperty(property)) {
+                    for (Property<?> property : structureBlockInfoWorld.state().getProperties()) {
+                        if (newBlockState.hasProperty(property)) {
                             newBlockState = GeneralUtils.getStateWithProperty(newBlockState, structureBlockInfoWorld.state(), property);
                         }
                     }
                     return new StructureTemplate.StructureBlockInfo(structureBlockInfoWorld.pos(), newBlockState, structureBlockInfoWorld.nbt());
                 }
-                else{
+                else {
                     Bumblezone.LOGGER.warn("The Bumblezone: the_bumblezone:random_replace_with_properties_processor in a processor file has no replacement block of any kind.");
                 }
             }

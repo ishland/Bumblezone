@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.LevelReader;
@@ -35,11 +36,14 @@ public class ReplaceNotAirProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
 
-        if(blocksToAlwaysReplace.isEmpty() || blocksToAlwaysReplace.contains(structureBlockInfoWorld.state().getBlock())) {
+        if (blocksToAlwaysReplace.isEmpty() || blocksToAlwaysReplace.contains(structureBlockInfoWorld.state().getBlock())) {
             BlockPos position = structureBlockInfoWorld.pos();
-            BlockState worldState = worldView.getBlockState(position);
+            BlockState worldState = levelReader.getBlockState(position);
 
             if (worldState.isAir()) {
                 return null;

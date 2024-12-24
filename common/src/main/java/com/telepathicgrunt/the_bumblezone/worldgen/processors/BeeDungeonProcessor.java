@@ -35,7 +35,11 @@ public class BeeDungeonProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
         BlockState blockState = structureBlockInfoWorld.state();
         BlockPos worldPos = structureBlockInfoWorld.pos();
         RandomSource random = new WorldgenRandom(new LegacyRandomSource(0));
@@ -49,7 +53,7 @@ public class BeeDungeonProcessor extends StructureProcessor {
                 return structureBlockInfoWorld;
             }
             String metadata = compoundTag.getString("metadata");
-            BlockState belowBlock = worldView.getChunk(worldPos).getBlockState(worldPos);
+            BlockState belowBlock = levelReader.getChunk(worldPos).getBlockState(worldPos);
 
             //altar blocks cannot be placed on air
             if (belowBlock.isAir()) {
@@ -113,8 +117,8 @@ public class BeeDungeonProcessor extends StructureProcessor {
             boolean compatSuccess = false;
 
             for (ModCompat compat : ModChecker.DUNGEON_COMB_COMPATS) {
-                if (compat.checkCombSpawn(worldPos, random, worldView, false)) {
-                    StructureTemplate.StructureBlockInfo info = compat.getHoneycomb(worldPos, random, worldView, false);
+                if (compat.checkCombSpawn(worldPos, random, levelReader, false)) {
+                    StructureTemplate.StructureBlockInfo info = compat.getHoneycomb(worldPos, random, levelReader, false);
                     if (info != null) {
                         return info;
                     }

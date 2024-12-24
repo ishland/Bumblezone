@@ -2,6 +2,7 @@ package com.telepathicgrunt.the_bumblezone.worldgen.processors;
 
 import com.mojang.serialization.Codec;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -19,10 +20,14 @@ public class FluidTickProcessor extends StructureProcessor {
 
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldView, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            return structureBlockInfoWorld;
+        }
+
         BlockState structureState = structureBlockInfoWorld.state();
-        if(!structureState.getFluidState().isEmpty() && structureBlockInfoWorld.pos().getY() > worldView.getMinBuildHeight() && structureBlockInfoWorld.pos().getY() < worldView.getMaxBuildHeight()) {
-            ((LevelAccessor)worldView).scheduleTick(structureBlockInfoWorld.pos(), structureState.getFluidState().getType(), 0);
+        if(!structureState.getFluidState().isEmpty() && structureBlockInfoWorld.pos().getY() > levelReader.getMinBuildHeight() && structureBlockInfoWorld.pos().getY() < levelReader.getMaxBuildHeight()) {
+            ((LevelAccessor)levelReader).scheduleTick(structureBlockInfoWorld.pos(), structureState.getFluidState().getType(), 0);
         }
         return structureBlockInfoWorld;
     }

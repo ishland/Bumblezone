@@ -68,12 +68,16 @@ public class TagReplaceProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         StructureTemplate.StructureBlockInfo returnInfo = structureBlockInfoWorld;
         if(structureBlockInfoWorld.state().getBlock() == inputBlock &&
             (settings.getBoundingBox() == null ||
             settings.getBoundingBox().isInside(structureBlockInfoWorld.pos())))
         {
+            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+                return structureBlockInfoWorld;
+            }
+
             Optional<HolderSet.Named<Block>> optionalBlocks = BuiltInRegistries.BLOCK.getTag(outputBlockTag);
 
             if(optionalBlocks.isPresent()) {
@@ -144,7 +148,7 @@ public class TagReplaceProcessor extends StructureProcessor {
                         }
                     }
 
-                    ChunkAccess chunk = worldReader.getChunk(structureBlockInfoWorld.pos());
+                    ChunkAccess chunk = levelReader.getChunk(structureBlockInfoWorld.pos());
 
                     BlockPos mainPos = structureBlockInfoWorld.pos();
                     BlockPos groundPos = mainPos.below();
@@ -173,7 +177,7 @@ public class TagReplaceProcessor extends StructureProcessor {
                     chunk.setBlockState(mainPos, Blocks.AIR.defaultBlockState(), false);
                     chunk.setBlockState(groundPos, Blocks.GRASS_BLOCK.defaultBlockState(), false);
 
-                    if (checkingState.canSurvive(worldReader, mainPos)) {
+                    if (checkingState.canSurvive(levelReader, mainPos)) {
                         returnInfo = new StructureTemplate.StructureBlockInfo(structureBlockInfoWorld.pos(), newBlockState, structureBlockInfoWorld.nbt());
                     }
 

@@ -24,6 +24,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -864,6 +865,12 @@ public class GeneralUtils {
         ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.filterBlocks(blockPos, new StructurePlaceSettings().setRotation(rotation), Blocks.JIGSAW, true);
         Util.shuffle(objectArrayList, randomSource);
         return objectArrayList;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+    public static boolean isOutsideCenterWorldgenRegionChunk(LevelReader levelReader, BlockPos pos) {
+        return levelReader instanceof WorldGenRegion worldGenRegion && !worldGenRegion.getCenter().equals(new ChunkPos(pos));
     }
 
     /////////////////////////////////////////////////////////////////////////////////

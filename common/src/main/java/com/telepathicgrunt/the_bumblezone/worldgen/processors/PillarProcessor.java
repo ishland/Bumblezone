@@ -66,8 +66,8 @@ public class PillarProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos templateOffset, BlockPos worldOffset, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
-        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos templateOffset, BlockPos worldOffset, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
+        if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
             return structureBlockInfoWorld;
         }
 
@@ -118,12 +118,12 @@ public class PillarProcessor extends StructureProcessor {
                         if(newPillarState2 == null) {
                             break;
                         }
-                        newPillarState2 = processor.processBlock(levelReader, newPillarState1.pos(), newPillarState2.pos(), newPillarState1, newPillarState2, structurePlacementData);
+                        newPillarState2 = processor.processBlock(levelReader, newPillarState1.pos(), newPillarState2.pos(), newPillarState1, newPillarState2, settings);
                     }
                 }
 
                 if(newPillarState2 != null) {
-                    BlockState newState = newPillarState2.state().rotate(structurePlacementData.getRotation());
+                    BlockState newState = newPillarState2.state().rotate(settings.getRotation());
                     if (isNotInWorldgen) {
                         ((ServerLevel)levelReader).setBlock(currentPos, newState, 3);
                     }

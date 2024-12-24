@@ -36,7 +36,7 @@ public class BlockMergeOverridesProcessor extends StructureProcessor {
             return null;
         }
 
-        if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+        if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
             return structureBlockInfoWorld;
         }
 

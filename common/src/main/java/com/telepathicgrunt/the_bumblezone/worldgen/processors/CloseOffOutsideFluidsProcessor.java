@@ -26,10 +26,10 @@ public class CloseOffOutsideFluidsProcessor extends StructureProcessor {
     private CloseOffOutsideFluidsProcessor() { }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         BlockPos worldPos = structureBlockInfoWorld.pos();
         if (structureBlockInfoWorld.state().isAir()) {
-            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
                 return structureBlockInfoWorld;
             }
 

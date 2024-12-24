@@ -25,9 +25,9 @@ public class HoneycombBroodRandomizeProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         if (structureBlockInfoWorld.state().is(BzBlocks.HONEYCOMB_BROOD.get())) {
-            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
                 return structureBlockInfoWorld;
             }
 
@@ -38,7 +38,7 @@ public class HoneycombBroodRandomizeProcessor extends StructureProcessor {
             return new StructureTemplate.StructureBlockInfo(
                     worldPos,
                     BzBlocks.HONEYCOMB_BROOD.get().defaultBlockState()
-                        .setValue(HoneycombBrood.STAGE, structurePlacementData.getRandom(worldPos).nextInt(4))
+                        .setValue(HoneycombBrood.STAGE, settings.getRandom(worldPos).nextInt(4))
                         .setValue(HoneycombBrood.FACING, blockState.getValue(HoneycombBrood.FACING)),
                     nbt);
         }

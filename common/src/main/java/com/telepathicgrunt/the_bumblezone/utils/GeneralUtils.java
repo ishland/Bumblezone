@@ -4,11 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.mojang.datafixers.util.Pair;
-import com.telepathicgrunt.the_bumblezone.Bumblezone;
 import com.telepathicgrunt.the_bumblezone.mixin.world.SinglePoolElementAccessor;
 import com.telepathicgrunt.the_bumblezone.mixin.world.StructureTemplateAccessor;
 import com.telepathicgrunt.the_bumblezone.modinit.BzBlocks;
-import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
@@ -26,7 +24,6 @@ import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -38,14 +35,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.trading.ItemCost;
-import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -77,20 +70,17 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -825,8 +815,8 @@ public class GeneralUtils {
 
     /////////////////////////////////////////////////////////////////////////////////
 
-    public static boolean isOutsideCenterWorldgenRegionChunk(LevelReader levelReader, BlockPos pos) {
-        return levelReader instanceof WorldGenRegion worldGenRegion && !worldGenRegion.getCenter().equals(new ChunkPos(pos));
+    public static boolean isOutsideStructureAllowedBounds(StructurePlaceSettings settings, BlockPos pos) {
+        return settings.getBoundingBox() != null && !settings.getBoundingBox().isInside(pos);
     }
 
     /////////////////////////////////////////////////////////////////////////////////

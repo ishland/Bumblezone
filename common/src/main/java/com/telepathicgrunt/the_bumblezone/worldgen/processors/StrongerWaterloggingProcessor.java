@@ -5,8 +5,6 @@ import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
 import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -25,7 +23,7 @@ public class StrongerWaterloggingProcessor extends StructureProcessor {
     @Override
     public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos pos2, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         if (structureBlockInfoWorld.state().hasProperty(BlockStateProperties.WATERLOGGED) && !structureBlockInfoWorld.state().getValue(BlockStateProperties.WATERLOGGED)) {
-            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
                 return structureBlockInfoWorld;
             }
 

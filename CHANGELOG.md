@@ -13,6 +13,9 @@ Optimized some processors that run for structures/features. Makes worldgen a sli
 Improved speed for Sticky Honey Residue's check if it can survive at a spot.
  This will slightly improve worldgen speed for Crystal Canyon biome.
 
+#### Mod Compat:
+Allowed Enderman Overhaul's Bubble Pearl to teleport players to Bumblezone.
+
 
 ### **(V.7.5.7 Changes) (1.20.1 Minecraft)**
 

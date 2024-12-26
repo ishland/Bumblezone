@@ -10,11 +10,13 @@ import com.telepathicgrunt.the_bumblezone.modinit.BzFluids;
 import com.telepathicgrunt.the_bumblezone.modinit.BzProcessors;
 import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.LegacyRandomSource;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
@@ -40,17 +42,15 @@ public class HoneycombHoleProcessor extends StructureProcessor {
 
         BlockState placingState = structureBlockInfoWorld.state();
         BlockPos worldPos = structureBlockInfoWorld.pos();
-        RandomSource random = new WorldgenRandom(new LegacyRandomSource(0));
-        random.setSeed(worldPos.asLong() * worldPos.getY());
-
         ChunkAccess chunk = levelReader.getChunk(structureBlockInfoWorld.pos());
-        BlockState checkedState = chunk.getBlockState(structureBlockInfoWorld.pos());
+        LevelChunkSection chunkSection = chunk.getSection(levelReader.getSectionIndex(blockPos.getY()));
+        BlockState checkedState = getBlockStateFromSection(chunkSection, structureBlockInfoWorld.pos());
 
         // does world checks for cave and pollen powder
         if (checkedState.isAir() || !checkedState.getFluidState().isEmpty()) {
             if (placingState.isAir() || placingState.is(BzBlocks.PILE_OF_POLLEN.get())) {
                 if (!checkedState.getFluidState().isEmpty() || structureBlockInfoWorld.pos().getY() <= floodLevel) {
-                    chunk.setBlockState(structureBlockInfoWorld.pos(), BzFluids.SUGAR_WATER_BLOCK.get().defaultBlockState(), false);
+                    setBlockStateFromSection(chunkSection, structureBlockInfoWorld.pos(), BzFluids.SUGAR_WATER_BLOCK.get().defaultBlockState());
                     if (checkedState.hasBlockEntity()) {
                         chunk.removeBlockEntity(structureBlockInfoWorld.pos());
                     }
@@ -68,6 +68,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
                 chunk.removeBlockEntity(structureBlockInfoWorld.pos());
             }
 
+            RandomSource random = settings.getRandom(worldPos);
             if (random.nextInt(5) < 2) {
                 return new StructureTemplate.StructureBlockInfo(worldPos, placingState.setValue(HoneycombBrood.STAGE, random.nextInt(3)), null);
             }
@@ -92,6 +93,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
                 chunk.removeBlockEntity(structureBlockInfoWorld.pos());
             }
 
+            RandomSource random = settings.getRandom(worldPos);
             if (random.nextInt(3) == 0) {
                 return new StructureTemplate.StructureBlockInfo(worldPos, BzBlocks.FILLED_POROUS_HONEYCOMB.get().defaultBlockState(), null);
             }
@@ -112,6 +114,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
                 chunk.removeBlockEntity(structureBlockInfoWorld.pos());
             }
 
+            RandomSource random = settings.getRandom(worldPos);
             if (random.nextInt(80) != 0) {
                 return new StructureTemplate.StructureBlockInfo(worldPos, Blocks.CAVE_AIR.defaultBlockState(), null);
             }
@@ -122,6 +125,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
 
         // main body
         else if (placingState.is(Blocks.HONEYCOMB_BLOCK)) {
+            RandomSource random = settings.getRandom(worldPos);
             if (random.nextInt(3) != 0) {
                 if (checkedState.hasBlockEntity()) {
                     chunk.removeBlockEntity(structureBlockInfoWorld.pos());
@@ -135,6 +139,20 @@ public class HoneycombHoleProcessor extends StructureProcessor {
             chunk.removeBlockEntity(structureBlockInfoWorld.pos());
         }
         return structureBlockInfoWorld;
+    }
+
+    private static BlockState getBlockStateFromSection(LevelChunkSection chunkSection, BlockPos blockPos) {
+        int i = SectionPos.sectionRelative(blockPos.getX());
+        int j = SectionPos.sectionRelative(blockPos.getY());
+        int k = SectionPos.sectionRelative(blockPos.getZ());
+        return chunkSection.getBlockState(i, j, k);
+    }
+
+    private static void setBlockStateFromSection(LevelChunkSection chunkSection, BlockPos blockPos, BlockState newState) {
+        int i = SectionPos.sectionRelative(blockPos.getX());
+        int j = SectionPos.sectionRelative(blockPos.getY());
+        int k = SectionPos.sectionRelative(blockPos.getZ());
+        chunkSection.setBlockState(i, j, k, newState);
     }
 
     @Override

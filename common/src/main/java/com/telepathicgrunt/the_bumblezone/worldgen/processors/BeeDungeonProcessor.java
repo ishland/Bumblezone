@@ -42,8 +42,6 @@ public class BeeDungeonProcessor extends StructureProcessor {
 
         BlockState blockState = structureBlockInfoWorld.state();
         BlockPos worldPos = structureBlockInfoWorld.pos();
-        RandomSource random = new WorldgenRandom(new LegacyRandomSource(0));
-        random.setSeed(worldPos.asLong() * worldPos.getY());
         CompoundTag nbt = structureBlockInfoWorld.nbt();
 
         // placing altar blocks
@@ -60,6 +58,7 @@ public class BeeDungeonProcessor extends StructureProcessor {
                 blockState = Blocks.CAVE_AIR.defaultBlockState();
             }
             else {
+                RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
                 switch (metadata) {
                     case "center" -> {
                         if (random.nextFloat() < 0.1f) {
@@ -116,6 +115,7 @@ public class BeeDungeonProcessor extends StructureProcessor {
 
             boolean compatSuccess = false;
 
+            RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
             for (ModCompat compat : ModChecker.DUNGEON_COMB_COMPATS) {
                 if (compat.checkCombSpawn(worldPos, random, levelReader, false)) {
                     StructureTemplate.StructureBlockInfo info = compat.getHoneycomb(worldPos, random, levelReader, false);
@@ -138,6 +138,7 @@ public class BeeDungeonProcessor extends StructureProcessor {
 
         // walls
         else if (blockState.is(BzBlocks.HONEYCOMB_BROOD.get())) {
+            RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
             if (random.nextFloat() < 0.6f) {
                 blockState = BzBlocks.HONEYCOMB_BROOD.get().defaultBlockState()
                         .setValue(HoneycombBrood.STAGE, random.nextInt(3))
@@ -153,6 +154,7 @@ public class BeeDungeonProcessor extends StructureProcessor {
 
         // sugar water
         else if (blockState.is(BzFluids.SUGAR_WATER_BLOCK.get())) {
+            RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
             if (random.nextFloat() < 0.1f) {
                 blockState = BzBlocks.HONEY_CRYSTAL.get().defaultBlockState().setValue(HoneyCrystal.WATERLOGGED, true);
             }

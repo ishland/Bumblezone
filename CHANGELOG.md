@@ -3,6 +3,9 @@
 #### Structures:
 Fixed an issue where processors in Structures were running their logic too often in side chunks they didn't need to run in.
 
+#### Features:
+Improve generation speed of the large honeycomb holes in walls.
+
 #### Processors:
 Optimized some processors that run for structures/features. Makes worldgen a slight bit faster.
 

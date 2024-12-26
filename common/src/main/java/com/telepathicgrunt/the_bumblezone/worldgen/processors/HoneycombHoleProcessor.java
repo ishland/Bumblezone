@@ -36,23 +36,23 @@ public class HoneycombHoleProcessor extends StructureProcessor {
 
     @Override
     public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
-        if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
+        BlockPos worldPos = structureBlockInfoWorld.pos();
+        if (GeneralUtils.isOutsideStructureAllowedBounds(settings, worldPos)) {
             return structureBlockInfoWorld;
         }
 
         BlockState placingState = structureBlockInfoWorld.state();
-        BlockPos worldPos = structureBlockInfoWorld.pos();
-        ChunkAccess chunk = levelReader.getChunk(structureBlockInfoWorld.pos());
-        LevelChunkSection chunkSection = chunk.getSection(levelReader.getSectionIndex(blockPos.getY()));
-        BlockState checkedState = getBlockStateFromSection(chunkSection, structureBlockInfoWorld.pos());
+        ChunkAccess chunk = levelReader.getChunk(worldPos);
+        LevelChunkSection chunkSection = chunk.getSection(levelReader.getSectionIndex(worldPos.getY()));
+        BlockState checkedState = getBlockStateFromSection(chunkSection, worldPos);
 
         // does world checks for cave and pollen powder
         if (checkedState.isAir() || !checkedState.getFluidState().isEmpty()) {
             if (placingState.isAir() || placingState.is(BzBlocks.PILE_OF_POLLEN.get())) {
-                if (!checkedState.getFluidState().isEmpty() || structureBlockInfoWorld.pos().getY() <= floodLevel) {
-                    setBlockStateFromSection(chunkSection, structureBlockInfoWorld.pos(), BzFluids.SUGAR_WATER_BLOCK.get().defaultBlockState());
+                if (!checkedState.getFluidState().isEmpty() || worldPos.getY() <= floodLevel) {
+                    setBlockStateFromSection(chunkSection, worldPos, BzFluids.SUGAR_WATER_BLOCK.get().defaultBlockState());
                     if (checkedState.hasBlockEntity()) {
-                        chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+                        chunk.removeBlockEntity(worldPos);
                     }
                     return null;
                 }
@@ -65,7 +65,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
         // brood
         if (placingState.is(BzBlocks.HONEYCOMB_BROOD.get())) {
             if (checkedState.hasBlockEntity()) {
-                chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+                chunk.removeBlockEntity(worldPos);
             }
 
             RandomSource random = settings.getRandom(worldPos);
@@ -90,7 +90,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
         // ring around brood
         if (placingState.is(Blocks.HONEY_BLOCK) || placingState.is(BzBlocks.FILLED_POROUS_HONEYCOMB.get())) {
             if (checkedState.hasBlockEntity()) {
-                chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+                chunk.removeBlockEntity(worldPos);
             }
 
             RandomSource random = settings.getRandom(worldPos);
@@ -105,13 +105,13 @@ public class HoneycombHoleProcessor extends StructureProcessor {
         // Pollen pile
         else if (placingState.is(BzBlocks.PILE_OF_POLLEN.get())) {
             // Check if pollen pile can even be placed here safely
-            BlockState belowState = chunk.getBlockState(structureBlockInfoWorld.pos().below());
+            BlockState belowState = chunk.getBlockState(worldPos.below());
             if (belowState.isAir() || !belowState.getFluidState().isEmpty()) {
                 return null;
             }
 
             if (checkedState.hasBlockEntity()) {
-                chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+                chunk.removeBlockEntity(worldPos);
             }
 
             RandomSource random = settings.getRandom(worldPos);
@@ -128,7 +128,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
             RandomSource random = settings.getRandom(worldPos);
             if (random.nextInt(3) != 0) {
                 if (checkedState.hasBlockEntity()) {
-                    chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+                    chunk.removeBlockEntity(worldPos);
                 }
 
                 return new StructureTemplate.StructureBlockInfo(worldPos, BzBlocks.FILLED_POROUS_HONEYCOMB.get().defaultBlockState(), null);
@@ -136,7 +136,7 @@ public class HoneycombHoleProcessor extends StructureProcessor {
         }
 
         if (checkedState.hasBlockEntity()) {
-            chunk.removeBlockEntity(structureBlockInfoWorld.pos());
+            chunk.removeBlockEntity(worldPos);
         }
         return structureBlockInfoWorld;
     }

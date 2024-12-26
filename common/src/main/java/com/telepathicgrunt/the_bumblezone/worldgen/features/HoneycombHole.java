@@ -52,14 +52,14 @@ public class HoneycombHole extends Feature<NbtFeatureConfig> {
         // offset the feature's position
         BlockPos position = context.origin().above(context.config().structureYOffset);
 
-        StructurePlaceSettings structurePlacementData = (new StructurePlaceSettings()).setRotation(Rotation.NONE).setRotationPivot(halfLengths).setIgnoreEntities(false).setKnownShape(true);
+        StructurePlaceSettings structurePlacementData = (new StructurePlaceSettings()).setRotation(Rotation.NONE).setKeepLiquids(false).setRotationPivot(halfLengths).setIgnoreEntities(false).setKnownShape(true);
         Registry<StructureProcessorList> processorListRegistry = context.level().getLevel().getServer().registryAccess().registryOrThrow(Registries.PROCESSOR_LIST);
         StructureProcessorList emptyProcessor = processorListRegistry.get(EMPTY);
 
         Optional<StructureProcessorList> processor = processorListRegistry.getOptional(context.config().processor);
         processor.orElse(emptyProcessor).list().forEach(structurePlacementData::addProcessor); // add all processors
         mutable.set(position).move(-halfLengths.getX(), 0, -halfLengths.getZ());
-        template.placeInWorld(context.level(), mutable, mutable, structurePlacementData, context.random(), Block.UPDATE_INVISIBLE);
+        GeneralUtils.placeInWorldWithChunkSectionCachingAndWithoutNeighborUpdate(context.level(), template, mutable, mutable, structurePlacementData, context.random(), Block.UPDATE_INVISIBLE);
 
         // Post-processors
         // For all processors that are sensitive to neighboring blocks such as vines.

@@ -202,7 +202,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
                             mutableBlockPos.getZ() * 0.019D,
                             mutableBlockPos.getY() * 0.038D);
 
-                    if (noise1 >= 0.0360555127546399D || noise1 <= -0.0360555127546399D) {
+                    if (noise1 >= 0.037D || noise1 <= -0.037D) {
                         z = zSkipping(z, noise1);
                         continue;
                     }
@@ -214,7 +214,7 @@ public class HoneycombCaves extends Feature<NoneFeatureConfiguration> {
 
                     double finalNoise = noise1 * noise1 + noise2 * noise2;
 
-                    if (finalNoise < 0.0013f) {
+                    if (finalNoise < 0.0014f) {
                         hexagon(level, bulkSectionAccess, context.chunkGenerator(), mutableBlockPos, context.random(), noise1);
                     }
                     else z = zSkipping(z, finalNoise);

@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 public class UnsafeBulkSectionAccess {
@@ -52,13 +54,31 @@ public class UnsafeBulkSectionAccess {
         return levelChunkSection.getBlockState(i, j, k);
     }
 
-    public void setBlockState(BlockPos blockPos, BlockState state, boolean lockSection) {
-        this.getSection(blockPos).setBlockState(
+    public FluidState getFluidState(BlockPos blockPos) {
+        LevelChunkSection levelChunkSection = this.getSection(blockPos);
+        if (levelChunkSection == null) {
+            return Fluids.EMPTY.defaultFluidState();
+        }
+        int i = SectionPos.sectionRelative(blockPos.getX());
+        int j = SectionPos.sectionRelative(blockPos.getY());
+        int k = SectionPos.sectionRelative(blockPos.getZ());
+        return levelChunkSection.getFluidState(i, j, k);
+    }
+
+    public boolean setBlockState(BlockPos blockPos, BlockState state, boolean lockSection) {
+        LevelChunkSection chunkSection = this.getSection(blockPos);
+        if (chunkSection == null) {
+            return false;
+        }
+
+        chunkSection.setBlockState(
                 SectionPos.sectionRelative(blockPos.getX()),
                 SectionPos.sectionRelative(blockPos.getY()),
                 SectionPos.sectionRelative(blockPos.getZ()),
                 state,
                 lockSection);
+
+        return true;
     }
 }
 

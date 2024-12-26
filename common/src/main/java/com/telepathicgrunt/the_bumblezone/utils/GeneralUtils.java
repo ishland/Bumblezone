@@ -618,6 +618,123 @@ public class GeneralUtils {
         }
     }
 
+
+    public static void placeInWorldWithChunkSectionCachingAndWithoutNeighborUpdate(
+            ServerLevelAccessor serverLevelAccessor,
+            StructureTemplate structureTemplate,
+            BlockPos blockPos,
+            BlockPos blockPos2,
+            StructurePlaceSettings structurePlaceSettings,
+            RandomSource randomSource,
+            int i)
+    {
+        if (((StructureTemplateAccessor)structureTemplate).getBlocks().isEmpty()) {
+            return;
+        }
+        List<StructureTemplate.StructureBlockInfo> list = structurePlaceSettings.getRandomPalette(((StructureTemplateAccessor)structureTemplate).getBlocks(), blockPos).blocks();
+        if (list.isEmpty() && structurePlaceSettings.isIgnoreEntities() || structureTemplate.getSize().getX() < 1 || structureTemplate.getSize().getY() < 1 || structureTemplate.getSize().getZ() < 1) {
+            return;
+        }
+
+        UnsafeBulkSectionAccess bulkSectionAccess = new UnsafeBulkSectionAccess(serverLevelAccessor);
+        BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
+        ArrayList<BlockPos> list2 = Lists.newArrayListWithCapacity(structurePlaceSettings.shouldKeepLiquids() ? list.size() : 0);
+        ArrayList<BlockPos> list3 = Lists.newArrayListWithCapacity(structurePlaceSettings.shouldKeepLiquids() ? list.size() : 0);
+        ArrayList<Pair<BlockPos, CompoundTag>> list4 = Lists.newArrayListWithCapacity(list.size());
+        int j = Integer.MAX_VALUE;
+        int k = Integer.MAX_VALUE;
+        int l = Integer.MAX_VALUE;
+        int m = Integer.MIN_VALUE;
+        int n = Integer.MIN_VALUE;
+        int o = Integer.MIN_VALUE;
+        List<StructureTemplate.StructureBlockInfo> list5 = StructureTemplate.processBlockInfos(serverLevelAccessor, blockPos, blockPos2, structurePlaceSettings, list);
+        for (StructureTemplate.StructureBlockInfo structureBlockInfo : list5) {
+            BlockEntity blockEntity;
+            BlockPos blockPos3 = structureBlockInfo.pos();
+            if (boundingBox != null && !boundingBox.isInside(blockPos3)) continue;
+            FluidState fluidState = structurePlaceSettings.shouldKeepLiquids() ? bulkSectionAccess.getFluidState(blockPos3) : null;
+            BlockState blockState = structureBlockInfo.state().mirror(structurePlaceSettings.getMirror()).rotate(structurePlaceSettings.getRotation());
+            if (structureBlockInfo.nbt() != null) {
+                blockEntity = serverLevelAccessor.getBlockEntity(blockPos3);
+                Clearable.tryClear(blockEntity);
+                bulkSectionAccess.setBlockState(blockPos3, Blocks.BARRIER.defaultBlockState(), false);
+            }
+            if (!bulkSectionAccess.setBlockState(blockPos3, blockState, false)) continue;
+            j = Math.min(j, blockPos3.getX());
+            k = Math.min(k, blockPos3.getY());
+            l = Math.min(l, blockPos3.getZ());
+            m = Math.max(m, blockPos3.getX());
+            n = Math.max(n, blockPos3.getY());
+            o = Math.max(o, blockPos3.getZ());
+            list4.add(Pair.of(blockPos3, structureBlockInfo.nbt()));
+            if (structureBlockInfo.nbt() != null && (blockEntity = serverLevelAccessor.getBlockEntity(blockPos3)) != null) {
+                if (blockEntity instanceof RandomizableContainerBlockEntity) {
+                    structureBlockInfo.nbt().putLong("LootTableSeed", randomSource.nextLong());
+                }
+                blockEntity.load(structureBlockInfo.nbt());
+            }
+            if (fluidState == null) continue;
+            if (blockState.getFluidState().isSource()) {
+                list3.add(blockPos3);
+                continue;
+            }
+            if (!(blockState.getBlock() instanceof LiquidBlockContainer)) continue;
+            ((LiquidBlockContainer) blockState.getBlock()).placeLiquid(serverLevelAccessor, blockPos3, blockState, fluidState);
+            if (fluidState.isSource()) continue;
+            list2.add(blockPos3);
+        }
+        boolean bl = true;
+        Direction[] directions = new Direction[]{Direction.UP, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+        while (bl && !list2.isEmpty()) {
+            bl = false;
+            Iterator<BlockPos> iterator = list2.iterator();
+            while (iterator.hasNext()) {
+                BlockState blockState2;
+                Object block;
+                BlockPos blockPos3 = iterator.next();
+                FluidState fluidState2 = bulkSectionAccess.getFluidState(blockPos3);
+                for (int p = 0; p < directions.length && !fluidState2.isSource(); ++p) {
+                    BlockPos blockPos5 = blockPos3.relative(directions[p]);
+                    FluidState fluidState = bulkSectionAccess.getFluidState(blockPos5);
+                    if (!fluidState.isSource() || list3.contains(blockPos5)) continue;
+                    fluidState2 = fluidState;
+                }
+                if (!fluidState2.isSource() || !((block = (blockState2 = bulkSectionAccess.getBlockState(blockPos3)).getBlock()) instanceof LiquidBlockContainer)) continue;
+                ((LiquidBlockContainer)block).placeLiquid(serverLevelAccessor, blockPos3, blockState2, fluidState2);
+                bl = true;
+                iterator.remove();
+            }
+        }
+        if (j <= m) {
+            if (!structurePlaceSettings.getKnownShape()) {
+                BitSetDiscreteVoxelShape discreteVoxelShape = new BitSetDiscreteVoxelShape(m - j + 1, n - k + 1, o - l + 1);
+                for (Pair<BlockPos, CompoundTag> pair : list4) {
+                    BlockPos blockPos6 = pair.getFirst();
+                    ((DiscreteVoxelShape)discreteVoxelShape).fill(blockPos6.getX() - j, blockPos6.getY() - k, blockPos6.getZ() - l);
+                }
+                StructureTemplate.updateShapeAtEdge(serverLevelAccessor, i, discreteVoxelShape, j, k, l);
+            }
+            for (Pair<BlockPos, CompoundTag> pair : list4) {
+                BlockEntity blockEntity;
+                BlockPos blockPos7 = pair.getFirst();
+                if (!structurePlaceSettings.getKnownShape()) {
+                    BlockState blockState3;
+                    BlockState blockState2 = bulkSectionAccess.getBlockState(blockPos7);
+                    if (blockState2 != (blockState3 = Block.updateFromNeighbourShapes(blockState2, serverLevelAccessor, blockPos7))) {
+                        bulkSectionAccess.setBlockState(blockPos7, blockState3, false);
+                    }
+                    serverLevelAccessor.blockUpdated(blockPos7, blockState3.getBlock());
+                }
+                if (pair.getSecond() == null || (blockEntity = serverLevelAccessor.getBlockEntity(blockPos7)) == null) continue;
+                blockEntity.setChanged();
+            }
+        }
+
+        if (!structurePlaceSettings.isIgnoreEntities()) {
+            placeEntities(serverLevelAccessor, structureTemplate, blockPos, structurePlaceSettings.getMirror(), structurePlaceSettings.getRotation(), structurePlaceSettings.getRotationPivot(), boundingBox, structurePlaceSettings.shouldFinalizeEntities());
+        }
+    }
+
     private static void placeEntities(ServerLevelAccessor serverLevelAccessor, StructureTemplate structureTemplate, BlockPos blockPos, Mirror mirror, Rotation rotation, BlockPos blockPos2, @Nullable BoundingBox boundingBox, boolean bl) {
         for (StructureTemplate.StructureEntityInfo structureEntityInfo : ((StructureTemplateAccessor)structureTemplate).getEntityInfoList()) {
             BlockPos blockPos3 = StructureTemplate.transform(structureEntityInfo.blockPos, mirror, rotation, blockPos2).offset(blockPos);

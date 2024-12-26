@@ -23,6 +23,10 @@
       "required": false
     },
     {
+      "id": "endermanoverhaul:bubble_pearl",
+      "required": false
+    },
+    {
       "id": "endermanoverhaul:icy_pearl",
       "required": false
     },

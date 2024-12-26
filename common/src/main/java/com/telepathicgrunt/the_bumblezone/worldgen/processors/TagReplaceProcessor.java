@@ -74,7 +74,7 @@ public class TagReplaceProcessor extends StructureProcessor {
             (settings.getBoundingBox() == null ||
             settings.getBoundingBox().isInside(structureBlockInfoWorld.pos())))
         {
-            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
                 return structureBlockInfoWorld;
             }
 

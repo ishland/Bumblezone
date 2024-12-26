@@ -45,14 +45,14 @@ public class SpawnerRandomizingProcessor extends StructureProcessor {
     }
 
     @Override
-    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings structurePlacementData) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader levelReader, BlockPos pos, BlockPos blockPos, StructureTemplate.StructureBlockInfo structureBlockInfoLocal, StructureTemplate.StructureBlockInfo structureBlockInfoWorld, StructurePlaceSettings settings) {
         if (structureBlockInfoWorld.state().getBlock() instanceof SpawnerBlock) {
-            if (GeneralUtils.isOutsideCenterWorldgenRegionChunk(levelReader, structureBlockInfoWorld.pos())) {
+            if (GeneralUtils.isOutsideStructureAllowedBounds(settings, structureBlockInfoWorld.pos())) {
                 return structureBlockInfoWorld;
             }
 
             BlockPos worldPos = structureBlockInfoWorld.pos();
-            RandomSource randomSource = structurePlacementData.getRandom(worldPos);
+            RandomSource randomSource = settings.getRandom(worldPos);
 
             CompoundTag newSpawnerData;
             if (overrideMobsToPickFrom.isPresent() && overrideMobsToPickFrom.get().size() > 0 && randomSource.nextFloat() < chanceToOverrideWithTaggedMobs) {

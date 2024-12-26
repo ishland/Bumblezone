@@ -869,8 +869,8 @@ public class GeneralUtils {
 
     /////////////////////////////////////////////////////////////////////////////////
 
-    public static boolean isOutsideCenterWorldgenRegionChunk(LevelReader levelReader, BlockPos pos) {
-        return levelReader instanceof WorldGenRegion worldGenRegion && !worldGenRegion.getCenter().equals(new ChunkPos(pos));
+    public static boolean isOutsideStructureAllowedBounds(StructurePlaceSettings settings, BlockPos pos) {
+        return settings.getBoundingBox() != null && !settings.getBoundingBox().isInside(pos);
     }
 
     /////////////////////////////////////////////////////////////////////////////////

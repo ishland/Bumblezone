@@ -12,6 +12,7 @@ import com.telepathicgrunt.the_bumblezone.modinit.BzEntities;
 import com.telepathicgrunt.the_bumblezone.modinit.BzItems;
 import com.telepathicgrunt.the_bumblezone.modinit.BzParticles;
 import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import com.telepathicgrunt.the_bumblezone.utils.PlatformHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -191,7 +192,7 @@ public class PileOfPollenSuspicious extends BrushableBlock implements StateRetur
             return true;
         }
         else {
-            return Block.isFaceFull(blockstate.getCollisionShape(world, blockPos.below()), Direction.UP);
+            return GeneralUtils.isFaceFullFast(blockstate.getCollisionShape(world, blockPos.below()), Direction.UP);
         }
     }
 

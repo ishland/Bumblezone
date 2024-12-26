@@ -27,16 +27,15 @@ public class GiantHoneyCrystalFeature extends Feature<NoneFeatureConfiguration> 
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
 
         BlockPos.MutableBlockPos blockpos$Mutable = new BlockPos.MutableBlockPos();
-        WorldGenLevel level = context.level();
         RandomSource random = context.random();
         BlockPos origin = context.origin();
 
-        BlockState currentState = level.getBlockState(origin);
+        UnsafeBulkSectionAccess bulkSectionAccess = new UnsafeBulkSectionAccess(context.level());
+        BlockState currentState = bulkSectionAccess.getBlockState(origin);
         if (currentState.canOcclude() || currentState.is(BzTags.AIR_LIKE)) {
             return false;
         }
 
-        UnsafeBulkSectionAccess bulkSectionAccess = new UnsafeBulkSectionAccess(context.level());
         boolean validSpot = false;
         boolean superSlant = false;
         Direction wallDirection = null;

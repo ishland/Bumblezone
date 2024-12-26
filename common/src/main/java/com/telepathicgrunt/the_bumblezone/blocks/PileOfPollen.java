@@ -166,7 +166,7 @@ public class PileOfPollen extends FallingBlock {
             return true;
         }
         else {
-            return Block.isFaceFull(blockstate.getCollisionShape(world, blockPos.below()), Direction.UP);
+            return GeneralUtils.isFaceFullFast(blockstate.getCollisionShape(world, blockPos.below()), Direction.UP);
         }
     }
 

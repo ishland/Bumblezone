@@ -55,7 +55,7 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
                 blockState = Blocks.CAVE_AIR.defaultBlockState();
             }
             else {
-                RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
+                RandomSource random = settings.getRandom(worldPos);
                 switch (metadata) {
                     case "center" -> {
                         if (random.nextFloat() < 0.1f) {
@@ -115,7 +115,7 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
         else if(blockState.is(Blocks.HONEYCOMB_BLOCK) || blockState.is(BzBlocks.FILLED_POROUS_HONEYCOMB.get())) {
 
             boolean compatSuccess = false;
-            RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
+            RandomSource random = settings.getRandom(worldPos);
 
             for (ModCompat compat : ModChecker.DUNGEON_COMB_COMPATS) {
                 if (compat.checkCombSpawn(worldPos, random, levelReader, true)) {
@@ -138,7 +138,7 @@ public class SpiderInfestedBeeDungeonProcessor extends StructureProcessor {
 
         // walls
         else if(blockState.is(BzBlocks.HONEYCOMB_BROOD.get())) {
-            RandomSource random = new WorldgenRandom(new LegacyRandomSource(worldPos.asLong() * worldPos.getY()));
+            RandomSource random = settings.getRandom(worldPos);
             if (random.nextFloat() < 0.6f) {
                 blockState = BzBlocks.EMPTY_HONEYCOMB_BROOD.get().defaultBlockState()
                         .setValue(HoneycombBrood.FACING, blockState.getValue(HoneycombBrood.FACING));

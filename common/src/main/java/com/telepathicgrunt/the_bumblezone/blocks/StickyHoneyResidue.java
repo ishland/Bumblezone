@@ -4,6 +4,7 @@ import com.telepathicgrunt.the_bumblezone.items.HoneyBeeLeggings;
 import com.telepathicgrunt.the_bumblezone.modinit.BzCriterias;
 import com.telepathicgrunt.the_bumblezone.modinit.BzSounds;
 import com.telepathicgrunt.the_bumblezone.modinit.BzTags;
+import com.telepathicgrunt.the_bumblezone.utils.GeneralUtils;
 import it.unimi.dsi.fastutil.objects.Object2ShortMap;
 import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectArrayMap;
@@ -145,13 +146,8 @@ public class StickyHoneyResidue extends Block {
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_181239_, BlockGetter p_181240_, BlockPos p_181241_) {
+    public boolean propagatesSkylightDown(BlockState blockState, BlockGetter blockGetter, BlockPos blockPos) {
         return true;
-    }
-
-    public static boolean isAcceptableNeighbour(BlockGetter p_57854_, BlockPos p_57855_, Direction p_57856_) {
-        BlockState blockstate = p_57854_.getBlockState(p_57855_);
-        return Block.isFaceFull(blockstate.getCollisionShape(p_57854_, p_57855_), p_57856_.getOpposite());
     }
 
     private int countFaces(BlockState blockState) {
@@ -226,7 +222,7 @@ public class StickyHoneyResidue extends Block {
         for (Direction direction : Direction.values()) {
             BooleanProperty booleanproperty = FACING_TO_PROPERTY_MAP.get(direction);
             if (blockstate.getValue(booleanproperty)) {
-                if (isAcceptableNeighbour(world, pos.relative(direction), direction)) {
+                if (GeneralUtils.isFaceFullFast(world, pos.relative(direction), direction)) {
                     return true;
                 }
             }
@@ -264,7 +260,7 @@ public class StickyHoneyResidue extends Block {
         for (Direction direction : Direction.values()) {
             BooleanProperty booleanproperty = FACING_TO_PROPERTY_MAP.get(direction);
             if (blockstate.getValue(booleanproperty)) {
-                boolean flag = isAcceptableNeighbour(blockReader, pos.relative(direction), direction);
+                boolean flag = GeneralUtils.isFaceFullFast(blockReader, pos.relative(direction), direction);
                 blockstate = blockstate.setValue(booleanproperty, flag);
             }
         }

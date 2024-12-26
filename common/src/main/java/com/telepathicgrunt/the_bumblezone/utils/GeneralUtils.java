@@ -43,6 +43,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -74,6 +75,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BitSetDiscreteVoxelShape;
 import net.minecraft.world.phys.shapes.DiscreteVoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -871,6 +874,27 @@ public class GeneralUtils {
 
     public static boolean isOutsideStructureAllowedBounds(StructurePlaceSettings settings, BlockPos pos) {
         return settings.getBoundingBox() != null && !settings.getBoundingBox().isInside(pos);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+
+    public static boolean isFaceFullFast(BlockGetter blockGetter, BlockPos blockPos, Direction direction) {
+        BlockState blockstate = blockGetter.getBlockState(blockPos);
+        VoxelShape overallShape = blockstate.getCollisionShape(blockGetter, blockPos);
+
+        return isFaceFullFast(overallShape, direction);
+    }
+
+    public static boolean isFaceFullFast(VoxelShape overallShape, Direction direction) {
+        if (overallShape == Shapes.block()) {
+            return true;
+        }
+
+        if (overallShape == Shapes.empty()) {
+            return false;
+        }
+
+        return Block.isFaceFull(overallShape, direction);
     }
 
     /////////////////////////////////////////////////////////////////////////////////

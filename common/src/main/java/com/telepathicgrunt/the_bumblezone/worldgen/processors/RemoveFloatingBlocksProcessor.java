@@ -29,20 +29,23 @@ public class RemoveFloatingBlocksProcessor extends StructureProcessor {
         }
 
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos().set(structureBlockInfoWorld.pos());
-        ChunkAccess cachedChunk = levelReader.getChunk(mutable);
 
         // attempts to remove invalid floating plants
         if (structureBlockInfoWorld.state().isAir() || !structureBlockInfoWorld.state().getFluidState().isEmpty()) {
 
             // set the block in the world so that canPlaceAt's result changes
-            cachedChunk.setBlockState(mutable, structureBlockInfoWorld.state(), false);
-            BlockState aboveWorldState = levelReader.getBlockState(mutable.move(Direction.UP));
+            ChunkAccess cachedChunk = levelReader.getChunk(mutable);
+            BlockState aboveWorldState = cachedChunk.getBlockState(mutable.move(Direction.UP));
 
-            // detects the invalidly placed blocks
-            while (mutable.getY() < levelReader.getHeight() && !aboveWorldState.canSurvive(levelReader, mutable)) {
+            if (!aboveWorldState.isAir() && !aboveWorldState.canOcclude()) {
                 cachedChunk.setBlockState(mutable, structureBlockInfoWorld.state(), false);
-                mutable.move(Direction.UP);
-                aboveWorldState = levelReader.getBlockState(mutable);
+
+                // detects the invalidly placed blocks
+                while (mutable.getY() < levelReader.getHeight() && !aboveWorldState.canSurvive(levelReader, mutable)) {
+                    cachedChunk.setBlockState(mutable, structureBlockInfoWorld.state(), false);
+                    mutable.move(Direction.UP);
+                    aboveWorldState = cachedChunk.getBlockState(mutable);
+                }
             }
         }
         else if (!structureBlockInfoWorld.state().canSurvive(levelReader, mutable)) {

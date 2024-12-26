@@ -222,7 +222,7 @@ public class StickyHoneyResidue extends Block {
         for (Direction direction : Direction.values()) {
             BooleanProperty booleanproperty = FACING_TO_PROPERTY_MAP.get(direction);
             if (blockstate.getValue(booleanproperty)) {
-                if (GeneralUtils.isFaceFullFast(world, pos.relative(direction), direction)) {
+                if (GeneralUtils.isFaceFullFast(world, pos.relative(direction), direction.getOpposite())) {
                     return true;
                 }
             }
@@ -260,7 +260,7 @@ public class StickyHoneyResidue extends Block {
         for (Direction direction : Direction.values()) {
             BooleanProperty booleanproperty = FACING_TO_PROPERTY_MAP.get(direction);
             if (blockstate.getValue(booleanproperty)) {
-                boolean flag = GeneralUtils.isFaceFullFast(blockReader, pos.relative(direction), direction);
+                boolean flag = GeneralUtils.isFaceFullFast(blockReader, pos.relative(direction), direction.getOpposite());
                 blockstate = blockstate.setValue(booleanproperty, flag);
             }
         }

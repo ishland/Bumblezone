@@ -1,3 +1,9 @@
+### **(V.7.7.13 Changes) (1.21.1 Minecraft)**
+
+#### Biomes:
+Fixed bug where biome borders were all weird squared-like between certain biomes. Should be fixed now for good.
+
+
 ### **(V.7.7.12 Changes) (1.21.1 Minecraft)**
 
 #### Structures:

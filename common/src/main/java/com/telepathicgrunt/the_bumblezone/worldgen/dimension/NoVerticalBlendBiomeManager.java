@@ -72,7 +72,7 @@ public class NoVerticalBlendBiomeManager extends BiomeManager{
     }
 
     private long packXZ(int x, int z) {
-        return (((long) x) << 32) | z;
+        return (long)x & 0xFFFFFFFFL | ((long)z & 0xFFFFFFFFL) << 32;
     }
 
     private static double getFiddledDistance(long zoom, int xShiftedFlag, int zShiftedFlag, double magicXFlagged, double magicZFlagged) {

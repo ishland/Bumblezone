@@ -37,3 +37,5 @@ accessible method net/minecraft/world/level/block/PointedDripstoneBlock$FluidInf
 
 accessible class net/minecraft/client/gui/screens/MenuScreens$ScreenConstructor
 accessible method net/minecraft/world/entity/Entity getEncodeId ()Ljava/lang/String;
+
+extendable method net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator doCreateBiomes (Lnet/minecraft/world/level/levelgen/blending/Blender;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/StructureManager;Lnet/minecraft/world/level/chunk/ChunkAccess;)V

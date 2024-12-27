@@ -1,3 +1,9 @@
+### **(V.7.7.14 Changes) (1.21.1 Minecraft)**
+
+#### Features:
+Fixed logspam due to not setting POI correctly on Honeycomb Brood Blocks in large Honeycomb Hole features.
+
+
 ### **(V.7.7.13 Changes) (1.21.1 Minecraft)**
 
 #### Biomes:

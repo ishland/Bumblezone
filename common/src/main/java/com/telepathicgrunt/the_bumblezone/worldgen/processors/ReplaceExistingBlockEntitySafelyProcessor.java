@@ -8,6 +8,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
@@ -33,7 +34,9 @@ public class ReplaceExistingBlockEntitySafelyProcessor extends StructureProcesso
             BlockEntity blockEntity = levelReader.getBlockEntity(position);
 
             if (blockEntity != null) {
-                levelReader.getChunk(position).removeBlockEntity(position);
+                ChunkAccess chunkAccess = levelReader.getChunk(position);
+                chunkAccess.setBlockState(position, structureBlockInfoWorld.state(), false);
+                chunkAccess.removeBlockEntity(position);
             }
         }
 

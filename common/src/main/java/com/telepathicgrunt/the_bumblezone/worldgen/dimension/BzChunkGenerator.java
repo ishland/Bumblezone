@@ -103,7 +103,7 @@ public class BzChunkGenerator extends NoiseBasedChunkGenerator {
     }
 
     public record BiomeNoise(BiomeSource biomeSource) implements DensityFunction.SimpleFunction {
-        public static final KeyDispatchDataCodec<BiomeNoise> CODEC = KeyDispatchDataCodec.of(MapCodec.unit(new BiomeNoise()));
+        public static final KeyDispatchDataCodec<BiomeNoise> CODEC = KeyDispatchDataCodec.of(MapCodec.unit(new BiomeNoise(null)));
         public static Climate.Sampler sampler;
         public static BiomeSource biomeSourceOriginal;
 

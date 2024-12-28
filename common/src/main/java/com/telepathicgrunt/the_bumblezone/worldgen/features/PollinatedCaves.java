@@ -175,6 +175,7 @@ public class PollinatedCaves extends Feature<NoneFeatureConfiguration> {
             if (currentState.hasBlockEntity()) {
                 world.getChunk(position).removeBlockEntity(position);
             }
+
             if (!belowState.isAir() && belowState.getFluidState().isEmpty() && belowState.blocksMotion()) {
                 bulkSectionAccess.setBlockState(position, BzBlocks.PILE_OF_POLLEN.get().defaultBlockState().setValue(PileOfPollen.LAYERS, (int)Math.max(Math.min((noise + 1D) * 3D, 8), 1)), false);
                 world.scheduleTick(position, BzBlocks.PILE_OF_POLLEN.get(), 0);
@@ -189,6 +190,11 @@ public class PollinatedCaves extends Feature<NoneFeatureConfiguration> {
                         if (!bulkSectionAccess.getBlockState(sidePos).getFluidState().isEmpty()) {
                             return;
                         }
+                    }
+
+                    BlockState stateToReplace = bulkSectionAccess.getBlockState(position);
+                    if (stateToReplace.hasBlockEntity()) {
+                        world.getChunk(position).removeBlockEntity(position);
                     }
 
                     bulkSectionAccess.setBlockState(position, Blocks.CAVE_AIR.defaultBlockState(), false);

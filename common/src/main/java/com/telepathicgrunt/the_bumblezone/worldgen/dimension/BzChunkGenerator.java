@@ -1,12 +1,10 @@
 package com.telepathicgrunt.the_bumblezone.worldgen.dimension;
 
-import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.telepathicgrunt.the_bumblezone.Bumblezone;
 import com.telepathicgrunt.the_bumblezone.mixin.world.NoiseChunkAccessor;
 import com.telepathicgrunt.the_bumblezone.utils.PlatformHooks;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -64,8 +62,6 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class BzChunkGenerator extends NoiseBasedChunkGenerator {
@@ -89,7 +85,7 @@ public class BzChunkGenerator extends NoiseBasedChunkGenerator {
         this.defaultFluid = noiseGeneratorSettings.defaultFluid();
         NoiseRouter noiseRouter = noiseGeneratorSettings.noiseRouter();
 
-        BiomeNoise.biomeSource = this.getBiomeSource();
+        BiomeNoise.biomeSourceOriginal = this.getBiomeSource();
         BiomeNoise.sampler = new Climate.Sampler(
                 noiseRouter.temperature(),
                 noiseRouter.vegetation(),
@@ -106,10 +102,10 @@ public class BzChunkGenerator extends NoiseBasedChunkGenerator {
         this.globalFluidPicker = (x, y, z) -> sea;
     }
 
-    public record BiomeNoise() implements DensityFunction.SimpleFunction {
+    public record BiomeNoise(BiomeSource biomeSource) implements DensityFunction.SimpleFunction {
         public static final KeyDispatchDataCodec<BiomeNoise> CODEC = KeyDispatchDataCodec.of(MapCodec.unit(new BiomeNoise()));
         public static Climate.Sampler sampler;
-        public static BiomeSource biomeSource;
+        public static BiomeSource biomeSourceOriginal;
 
         @Override
         public double compute(FunctionContext functionContext) {
@@ -119,6 +115,18 @@ public class BzChunkGenerator extends NoiseBasedChunkGenerator {
                     sampler,
                     biomeSource,
                     BiomeRegistryHolder.BIOME_REGISTRY);
+        }
+
+        @Override
+        public DensityFunction mapAll(Visitor visitor) {
+            BiomeSource source;
+            if (biomeSourceOriginal instanceof BzBiomeSource bzBiomeSource) {
+                source = new BzBiomeSource(bzBiomeSource);
+            }
+            else {
+                source = biomeSourceOriginal;
+            }
+            return visitor.apply(new BiomeNoise(source));
         }
 
         @Override
@@ -268,39 +276,7 @@ public class BzChunkGenerator extends NoiseBasedChunkGenerator {
     public void applyCarvers(WorldGenRegion worldGenRegion, long seed, RandomState randomState, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunkAccess, GenerationStep.Carving carving) {}
 
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunkAccess) {
-        NoiseSettings noisesettings = this.settings.value().noiseSettings().clampToHeightAccessor(chunkAccess.getHeightAccessorForGeneration());
-        int i = noisesettings.minY();
-        int j = Mth.floorDiv(i, noisesettings.getCellHeight());
-        int k = Mth.floorDiv(noisesettings.height(), noisesettings.getCellHeight());
-        if (k <= 0) {
-            return CompletableFuture.completedFuture(chunkAccess);
-        }
-        else {
-            int l = chunkAccess.getSectionIndex(k * noisesettings.getCellHeight() - 1 + i);
-            int i1 = chunkAccess.getSectionIndex(i);
-            Set<LevelChunkSection> set = Sets.newHashSet();
-
-            for(int j1 = l; j1 >= i1; --j1) {
-                LevelChunkSection levelchunksection = chunkAccess.getSection(j1);
-                levelchunksection.acquire();
-                set.add(levelchunksection);
-            }
-
-            return CompletableFuture.supplyAsync(Util.wrapThreadWithTaskName(
-                    "wgen_fill_noise",
-                    () -> this.doFill(blender, structureManager, randomState, chunkAccess, j, k)),
-                    Util.backgroundExecutor())
-            .whenCompleteAsync((p_224309_, p_224310_) -> {
-                for(LevelChunkSection levelchunksection1 : set) {
-                    levelchunksection1.release();
-                }
-
-            }, Util.backgroundExecutor());
-        }
-    }
-
-    private ChunkAccess doFill(Blender blender, StructureManager structureManager, RandomState randomState, ChunkAccess chunkAccess, int x, int z) {
+    protected ChunkAccess doFill(Blender blender, StructureManager structureManager, RandomState randomState, ChunkAccess chunkAccess, int x, int z) {
         NoiseChunk noiseChunk = chunkAccess.getOrCreateNoiseChunk((chunkAccess1) -> this.createNoiseChunk(chunkAccess1, structureManager, blender, randomState));
         Heightmap heightmap = chunkAccess.getOrCreateHeightmapUnprimed(Heightmap.Types.OCEAN_FLOOR_WG);
         Heightmap heightmap1 = chunkAccess.getOrCreateHeightmapUnprimed(Heightmap.Types.WORLD_SURFACE_WG);

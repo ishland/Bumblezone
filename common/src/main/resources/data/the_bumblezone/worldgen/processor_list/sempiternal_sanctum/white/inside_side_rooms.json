@@ -289,7 +289,7 @@
       ]
     },
     {
-      "processor_type": "the_bumblezone:waterlogging_fix_processor"
+      "processor_type": "the_bumblezone:fluid_tick_processor"
     },
     {
       "processor_type": "the_bumblezone:replace_honey_processor"
